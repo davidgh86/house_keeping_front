@@ -9,7 +9,7 @@
         <input type="password" class="passwordinput" />
         <div class="passwordrecovery">Forgot your password?</div>
     </div>
-    <button type="button" class="enter">ENTER</button>
+    <button type="button" class="enter" @click="enter()">ENTER</button>
     <img src="https://www.citybreakapartments.com/wp-content/uploads/2017/10/CityBreakApartments2.png" alt="City Break Logo">
   </div>
 </template>
@@ -18,7 +18,12 @@
 import { defineComponent } from 'vue';
 
 export default defineComponent({
-  name: 'PageLogin'
+  name: 'Login',
+  methods: {
+    enter: function () {
+      this.$router.push("/")
+    }
+  }
 })
 </script>
 
