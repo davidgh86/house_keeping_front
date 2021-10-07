@@ -1,11 +1,7 @@
 <template>
   <div>
-    <div class="flexContainer">
-      <ApartmentInfo class="flexItem" :apartmentInfo="apartmentList[0]"/>
-      <ApartmentInfo class="flexItem" :apartmentInfo="apartmentList[1]"/>
-    </div>
-    <div class="flexContainer">
-      <ApartmentInfo class="flexItem" :apartmentInfo="apartmentList[2]"/>
+    <div v-for="pair in appartmentPairs" :key="pair.index" class="flexContainer">
+      <ApartmentInfo v-for="apartmentData in pair" :apartmentInfo="apartmentData" :key="apartmentData.name" class="flexItem"/>
     </div>
   </div>
 </template>
@@ -26,6 +22,22 @@ export default defineComponent({
     }
   },
   mounted() {
+  },
+  methods: {
+    chunkArrayInGroups: function(arr, size) {
+      let result = [];
+      for(var i = 0; i < arr.length; i += size) {
+        result.push(
+          arr.slice(i, i+size)
+        );
+      }
+      return result;
+    } 
+  },
+  computed: {
+    appartmentPairs: function () {
+      return this.chunkArrayInGroups(this.apartmentList, 2)
+    }
   }
 })
 </script>
