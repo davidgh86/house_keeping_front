@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-for="pair in appartmentPairs" :key="pair.index" class="flexContainer">
-      <ApartmentInfo v-for="apartmentData in pair" :apartmentInfo="apartmentData" :key="apartmentData.name" class="flexItem"/>
+      <ApartmentInfo v-for="apartmentData in pair" :apartmentInfo="apartmentData" :key="apartmentData.id" class="flexItem"/>
     </div>
   </div>
 </template>

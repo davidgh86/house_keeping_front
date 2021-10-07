@@ -50,7 +50,7 @@ const linksList = [
   {
     title: 'Edit Apartments',
     icon: 'edit',
-    link: '/apartments'
+    link: '/admin'
   },
   {
     title: 'Mark as clean',
