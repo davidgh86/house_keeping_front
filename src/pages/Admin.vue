@@ -2,23 +2,27 @@
   <div class="wrapper">
     <div class="header">HSK Admin</div>
     <div class="subheading">XX/XX/XXXX</div>
-    <div class="subheading2">
-      <!-- <div @click="removeElement(comboId)" v-for="comboId in combosIds" :key="comboId">
-        {{ combos[comboId] }}
-      </div> -->
-    </div>
 
     <div class="selectionbox">
-      <q-select
-        v-for="(comboId, index) in combosIds"
-        :key="comboId"
-        standout="bg-teal text-white"
-        :options="apartmentNames"
-        label="Custom standout"
-        v-model="combos[comboId]"
-        v-bind:style="getStyleRow(index)"
-        class="apt"
-      ></q-select>
+      <div v-for="(comboId, index) in combosIds"
+          :key="comboId" class="apt-row" v-bind:style="getStyleRow(index + 1)">
+        <q-select
+          standout="bg-teal text-white"
+          :options="apartmentNames"
+          label="Custom standout"
+          v-model="combos[comboId]"
+          class="apt-combo"
+        ></q-select>
+        <q-btn color="primary" text-color="white" icon="edit" class="apt-action-button" @click="changeEditVisibility(comboId)"></q-btn>
+        <q-btn color="primary" text-color="white" icon="delete" class="apt-action-button" @click="removeElement(comboId)"></q-btn>
+        <div class="apt-edit" v-show="visible[comboId]">
+          <label>Arrival time</label>
+          <input type="text" value="12:00"/>
+          <label>Keys</label>
+          <input type="text" value="3"/>
+        </div>
+      </div>
+
     </div>
     <div class="selectionbox">
       <div class="plus" @click="addElement(null)">
@@ -55,12 +59,19 @@ export default defineComponent({
       },
       addElement: function (value) {
         let uuid = uuidv4();
-        this.combosIds.add(uuid);
+        this.combosIds.push(uuid);
+        this.visible[uuid] = false; 
         this.combos[uuid] = value;
       },
       removeElement: function (uuid) {
-        this.combosIds.delete(uuid);
+        this.combosIds = this.combosIds.filter(function (value){
+          return value !== uuid
+        })
+        delete this.visible[uuid]; 
         delete this.combos[uuid];
+      },
+      changeEditVisibility: function (uuid) {
+        this.visible[uuid] = !this.visible[uuid]
       },
       getStyleRow: function (rowNumber) {
         return { gridRow: rowNumber };
@@ -69,6 +80,12 @@ export default defineComponent({
         this.$router.push("/apartments");
       },
     };
+  },
+
+  watch: {
+    getVisibilityStyle: function (uuid) {
+        return { visibility: this.visible[uuid] };
+      },
   },
 
   mounted() {
@@ -107,7 +124,8 @@ export default defineComponent({
           keysDelivered: 3,
         },
       ],
-      combosIds: new Set(),
+      combosIds: [],
+      visible: {},
       combos: {},
     };
   },
@@ -123,6 +141,9 @@ export default defineComponent({
         return appartment.id;
       });
     },
+    // getVisibilityStyle: function (uuid) {
+    //   return { visibility: this.visible[uuid] };
+    // },
   },
 });
 </script>
@@ -148,16 +169,6 @@ export default defineComponent({
   margin-top: 3.125rem;
   margin-bottom: 3.125rem;
 }
-.subheading2 {
-  grid-column: 1;
-  grid-row: 2;
-  font-family: "Open Sans";
-  font-style: normal;
-  font-size: 5rem;
-  text-align: center;
-  margin-top: 3.125rem;
-  margin-bottom: 3.125rem;
-}
 div.selectionbox {
   display: grid;
   grid-template-columns: 1fr 4fr 1fr;
@@ -168,13 +179,27 @@ div.selectionbox {
   font-family: "Open Sans";
   font-weight: 300;
 }
-.apt {
+.apt-row {
   grid-column: 2;
+  display: grid;
+  grid-template-columns: 8fr 1fr 1fr;
+}
+.apt-combo {
   background-color: #f5f5f5;
   border-radius: 0.625rem;
   text-align: right;
   padding-right: 1.25rem;
   font-size: 3.125rem;
+  grid-column: 1;
+  grid-row:1;
+}
+.apt-action-button {
+  margin: 0.2rem;
+  grid-row: 1;
+}
+.apt-edit {
+  margin: 0.2rem;
+  grid-row: 2;
 }
 .plus {
   grid-column: 3;
