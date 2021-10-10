@@ -6,26 +6,14 @@
     <div class="selectionbox">
       <div v-for="(comboId, index) in combosIds"
           :key="comboId" class="apt-row" v-bind:style="getStyleRow(index + 1)">
-        <q-select
-          standout="bg-teal text-white"
-          :options="apartmentNames"
-          label="Custom standout"
-          v-model="combos[comboId]"
-          class="apt-combo"
-        ></q-select>
-        <q-btn color="primary" text-color="white" icon="edit" class="apt-action-button" @click="changeEditVisibility(comboId)"></q-btn>
-        <q-btn color="primary" text-color="white" icon="delete" class="apt-action-button" @click="removeElement(comboId)"></q-btn>
-        <div class="apt-edit" v-show="visible[comboId]">
-          <label>Arrival time</label>
-          <input type="text" value="12:00"/>
-          <label>Keys</label>
-          <input type="text" value="3"/>
-        </div>
+        <apartment-combo :allApartments="allApartments" 
+          @confirmEdition="confirmEdition(comboId, $event)" 
+          @changeItem="updateApartment(comboId, $event)"
+          @delete="removeElement(comboId)"/>
       </div>
-
     </div>
     <div class="selectionbox">
-      <div class="plus" @click="addElement(null)">
+      <div class="plus" @click="addElement">
         <i class="fas fa-plus"></i>
       </div>
       <div
@@ -46,37 +34,39 @@
 <script>
 import { v4 as uuidv4 } from "uuid";
 import { defineComponent } from "vue";
+import ApartmentCombo from "components/ApartmentCombo.vue";
 
 export default defineComponent({
   name: "Admin",
-  components: {},
+  components: {
+    ApartmentCombo
+  },
   setup() {
     return {
-      initCombos: function () {
-        for (let apt of this.selectedApartments) {
-          this.addElement(apt.name);
-        }
-      },
       addElement: function (value) {
         let uuid = uuidv4();
         this.combosIds.push(uuid);
-        this.visible[uuid] = false; 
-        this.combos[uuid] = value;
       },
       removeElement: function (uuid) {
         this.combosIds = this.combosIds.filter(function (value){
           return value !== uuid
         })
-        delete this.visible[uuid]; 
-        delete this.combos[uuid];
+        delete this.selectedApartments[uuid];
       },
-      changeEditVisibility: function (uuid) {
-        this.visible[uuid] = !this.visible[uuid]
+      confirmEdition: function(uuid, apartment){
+        this.updateApartment(uuid, apartment)
+        alert("update send to back")
+        // TODO 
+      },
+      updateApartment: function(uuid, apartment){
+        this.selectedApartments[uuid] = apartment
       },
       getStyleRow: function (rowNumber) {
         return { gridRow: rowNumber };
       },
       goToApartments: function () {
+        // TODO send alert list to back
+        alert("Send all alerts to back")
         this.$router.push("/apartments");
       },
     };
@@ -89,21 +79,9 @@ export default defineComponent({
   },
 
   mounted() {
-    this.initCombos();
   },
   data: function () {
     return {
-      selectedApartments: [
-        { id: 0, name: "name1", keys: 3, status: "clean", keysDelivered: 3 },
-        { id: 1, name: "name2", time: "11:40", keys: 3, status: "on_cleaning" },
-        {
-          id: 2,
-          name: "name3",
-          time: "12:15",
-          status: "dirty",
-          keysDelivered: 3,
-        },
-      ],
       allApartments: [
         { id: 0, name: "name1", keys: 3, status: "clean", keysDelivered: 3 },
         { id: 1, name: "name2", time: "11:40", keys: 3, status: "on_cleaning" },
@@ -112,6 +90,7 @@ export default defineComponent({
           name: "name3",
           time: "12:15",
           status: "dirty",
+          keys: 5,
           keysDelivered: 3,
         },
         { id: 3, name: "name4", keys: 3, status: "clean", keysDelivered: 3 },
@@ -120,13 +99,14 @@ export default defineComponent({
           id: 5,
           name: "name6",
           time: "12:15",
+          keys: 8,
           status: "dirty",
           keysDelivered: 3,
         },
       ],
       combosIds: [],
       visible: {},
-      combos: {},
+      selectedApartments: {},
     };
   },
   methods: {},
@@ -141,9 +121,6 @@ export default defineComponent({
         return appartment.id;
       });
     },
-    // getVisibilityStyle: function (uuid) {
-    //   return { visibility: this.visible[uuid] };
-    // },
   },
 });
 </script>
@@ -181,21 +158,6 @@ div.selectionbox {
 }
 .apt-row {
   grid-column: 2;
-  display: grid;
-  grid-template-columns: 8fr 1fr 1fr;
-}
-.apt-combo {
-  background-color: #f5f5f5;
-  border-radius: 0.625rem;
-  text-align: right;
-  padding-right: 1.25rem;
-  font-size: 3.125rem;
-  grid-column: 1;
-  grid-row:1;
-}
-.apt-action-button {
-  margin: 0.2rem;
-  grid-row: 1;
 }
 .apt-edit {
   margin: 0.2rem;
