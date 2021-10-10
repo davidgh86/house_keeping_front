@@ -55,7 +55,7 @@ const linksList = [
   {
     title: 'Mark as clean',
     icon: 'done',
-    link: '/apartments'
+    link: '/team'
   },
   {
     title: 'Show status',
