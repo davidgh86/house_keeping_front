@@ -6,6 +6,13 @@ class BackendClient {
         this.client = axios.create({
             baseURL: process.env.API_REST_URL || "http://localhost:3000",
         });
+
+        if (typeof backendClient.instance === "object"){
+            return BackendClient.instance;
+        }
+
+        BackendClient.instance = this;
+        return this;
     }
 
     login(username, password) {
@@ -22,3 +29,5 @@ class BackendClient {
         })
     }
 }
+
+export default new BackendClient();
