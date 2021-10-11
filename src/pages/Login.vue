@@ -4,9 +4,9 @@
     <div class="subheading">HSK Admin</div>
     <div class="loginbox">
       <div class="user">USER</div>
-      <input type="text" class="userinput" />
+      <input type="text" class="userinput" v-model="user"/>
       <div class="password">PASSWORD</div>
-      <input type="password" class="passwordinput" />
+      <input type="password" class="passwordinput"  v-model="password"/>
       <div class="passwordrecovery">Forgot your password?</div>
     </div>
     <button type="button" class="enter" @click="enter()">ENTER</button>
@@ -19,12 +19,29 @@
 
 <script>
 import { defineComponent } from "vue";
+import axios from "axios";
 
 export default defineComponent({
   name: "Login",
+  data: function(){
+    return {
+      user: "",
+      password: ""
+    }
+  },
   methods: {
     enter: function () {
-      this.$router.push("/");
+      axios.post(process.env.API_REST_URL+'/user/login', {
+          username: this.user,
+          password: this.password
+      })
+      .then((response) => {
+        console.log(response)
+        alert(JSON.stringify(response.data))
+        //this.$router.push("/");
+      }, (error) => {
+        alert(error)
+      })
     },
   },
 });
