@@ -34,6 +34,12 @@
           :key="link.title"
           v-bind="link"
         />
+        <EssentialLink
+          v-if="isLoggedIn()"
+          title="Logout"
+          icon="logout"
+          @click.prevent="logout"
+          />
       </q-list>
     </q-drawer>
 
@@ -62,11 +68,11 @@ const linksList = [
     icon: 'apartment',
     link: '/apartments'
   },
-  {
-    title: 'Logout',
-    icon: 'logout',
-    link: '/login'
-  }
+  // {
+  //   title: 'Logout',
+  //   icon: 'logout',
+  //   link: '/login'
+  // }
 ];
 
 import { defineComponent, ref } from 'vue'
@@ -86,8 +92,17 @@ export default defineComponent({
       leftDrawerOpen,
       toggleLeftDrawer () {
         leftDrawerOpen.value = !leftDrawerOpen.value
-      }
+      },
+      logout() {
+        this.$store.dispatch('auth/logout')
+        .then(() => {
+          this.$router.push('/login')
+        })
+      },
     }
+  },
+  computed : {
+    isLoggedIn : function(){ return this.$store.getters.isLoggedIn}
   }
 })
 </script>

@@ -36,7 +36,6 @@ export default defineComponent({
       type: String,
       default: '#'
     },
-
     icon: {
       type: String,
       default: ''
@@ -44,7 +43,9 @@ export default defineComponent({
   },
   methods: {
     goToLink: function () {
-      this.$router.push(this.link)
+      if (!!this.link){
+        this.$router.push(this.link)
+      }
     }
   }
 })

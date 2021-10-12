@@ -19,7 +19,6 @@
 
 <script>
 import { defineComponent } from "vue";
-import axios from "axios";
 
 export default defineComponent({
   name: "Login",
@@ -31,16 +30,16 @@ export default defineComponent({
   },
   methods: {
     enter: function () {
-      axios.post(process.env.API_REST_URL+'/user/login', {
-          username: this.user,
-          password: this.password
+      let usr = this.user;
+      let pwd = this.password;
+      this.$store.dispatch('auth/login', { usr, pwd })
+      .then((user) => {
+        this.$api.setAuthenticationHeaders(user.token)
+        this.$router.push('/');
       })
-      .then((response) => {
-        console.log(response)
-        alert(JSON.stringify(response.data))
-        //this.$router.push("/");
-      }, (error) => {
-        alert(error)
+      .catch(err => {
+         console.error(err)
+         alert("Not valid credentials");
       })
     },
   },

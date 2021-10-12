@@ -8,11 +8,14 @@ const routes = [
       { path: 'apartments', component: () => import('pages/Apartments.vue') },
       { path: 'team', component: () => import('pages/CleaningManager.vue') },
       { path: 'admin', component: () => import('pages/Admin.vue') }
-    ]
+    ],
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: '/login',
-    component: () => import('pages/login.vue'),
+    component: () => import('pages/login.vue')
   },
 
   // Always leave this as last one,
