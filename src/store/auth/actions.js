@@ -4,6 +4,8 @@ export function login ({commit}, user) {
     return new Promise((resolve, reject) => {
         commit('auth_request')
 
+        console.log("aqui si")
+
         axios.post(process.env.API_REST_URL+'/user/login', {
             username: user.usr,
             password: user.pwd

@@ -34,12 +34,12 @@
           :key="link.title"
           v-bind="link"
         />
-        <EssentialLink
+        <!-- <EssentialLink
           v-if="isLoggedIn()"
           title="Logout"
           icon="logout"
           @click.prevent="logout"
-          />
+          /> -->
       </q-list>
     </q-drawer>
 
@@ -102,7 +102,7 @@ export default defineComponent({
     }
   },
   computed : {
-    isLoggedIn : function(){ return this.$store.getters.isLoggedIn}
+    //isLoggedIn : () => { return this.$store.getters["auth/isLoggedIn"]}
   }
 })
 </script>

@@ -27,13 +27,15 @@ export default route(function ({ store }) {
   })
 
   Router.beforeEach((to, from, next) => {
+    console.log("check matching")
     if (to.matched.some(record => record.meta.requiresAuth)) {
-      if (store.getters.isLoggedIn) {
+      if (store.getters["auth/isLoggedIn"]) {
         next()
         return
       }
       next('/login')
     } else {
+      console.log("should do")
       next()
     }
   })
