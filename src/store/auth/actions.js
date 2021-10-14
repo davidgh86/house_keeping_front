@@ -45,7 +45,7 @@ export function login ({commit}, user) {
     // })
 }
 
-export function logout({commit}){
-    backendClient.logout()
+export function logout({commit}, client){
+    client.logout()
 }
 

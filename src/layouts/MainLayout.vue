@@ -34,12 +34,7 @@
           :key="link.title"
           v-bind="link"
         />
-        <!-- <EssentialLink
-          v-if="isLoggedIn()"
-          title="Logout"
-          icon="logout"
-          @click.prevent="logout"
-          /> -->
+        <LogoutLink v-if="isLoggedIn"/>
       </q-list>
     </q-drawer>
 
@@ -51,7 +46,7 @@
 
 <script>
 import EssentialLink from 'components/EssentialLink.vue'
-
+import LogoutLink from 'components/LogoutLink.vue'
 const linksList = [
   {
     title: 'Edit Apartments',
@@ -68,20 +63,17 @@ const linksList = [
     icon: 'apartment',
     link: '/apartments'
   },
-  // {
-  //   title: 'Logout',
-  //   icon: 'logout',
-  //   link: '/login'
-  // }
 ];
 
 import { defineComponent, ref } from 'vue'
+import { mapGetters } from 'vuex'
 
 export default defineComponent({
   name: 'MainLayout',
 
   components: {
-    EssentialLink
+    EssentialLink,
+    LogoutLink,
   },
 
   setup () {
@@ -94,7 +86,7 @@ export default defineComponent({
         leftDrawerOpen.value = !leftDrawerOpen.value
       },
       logout() {
-        this.$store.dispatch('auth/logout')
+        this.$store.dispatch('auth/logout', this.$api)
         .then(() => {
           this.$router.push('/login')
         })
@@ -102,7 +94,9 @@ export default defineComponent({
     }
   },
   computed : {
-    //isLoggedIn : () => { return this.$store.getters["auth/isLoggedIn"]}
+    ...mapGetters({
+      isLoggedIn: 'auth/isLoggedIn'
+      })
   }
 })
 </script>
