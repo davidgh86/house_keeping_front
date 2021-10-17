@@ -30,10 +30,11 @@
         </q-item-label>
 
         <EssentialLink
-          v-for="link in essentialLinks"
+          v-for="link in visibleLinkList"
           :key="link.title"
           v-bind="link"
         />
+        
         <LogoutLink v-if="isLoggedIn"/>
       </q-list>
     </q-drawer>
@@ -51,17 +52,20 @@ const linksList = [
   {
     title: 'Edit Apartments',
     icon: 'edit',
-    link: '/admin'
+    link: '/admin',
+    roles: ['admin']
   },
   {
     title: 'Mark as clean',
     icon: 'done',
-    link: '/team'
+    link: '/team',
+    roles: ['admin', 'user']
   },
   {
     title: 'Show status',
     icon: 'apartment',
-    link: '/apartments'
+    link: '/apartments',
+    roles: ['admin', 'user']
   },
 ];
 
@@ -95,8 +99,16 @@ export default defineComponent({
   },
   computed : {
     ...mapGetters({
-      isLoggedIn: 'auth/isLoggedIn'
-      })
+      isLoggedIn: 'auth/isLoggedIn',
+      getRole: 'auth/getRole',
+    }),
+    visibleLinkList: function() {
+      return linksList.filter(item =>{
+        console.log(this.getRole())
+        return item.roles.includes(this.getRole)
+      });
+
+    }
   }
 })
 </script>
