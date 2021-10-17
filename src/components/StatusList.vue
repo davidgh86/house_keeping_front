@@ -1,19 +1,19 @@
 <template>
   <div>
     <div v-for="pair in appartmentPairs" :key="pair.index" class="flexContainer">
-      <ApartmentInfo v-for="apartmentData in pair" :apartmentInfo="apartmentData" :key="apartmentData.id" class="flexItem"/>
+      <ApartmentStatus v-for="apartmentData in pair" :apartmentInfo="apartmentData" :key="apartmentData.id" class="flexItem"/>
     </div>
   </div>
 </template>
 
 <script>
 import { defineComponent } from 'vue'
-import ApartmentInfo from 'components/ApartmentInfo.vue'
+import ApartmentStatus from 'components/ApartmentStatus.vue'
 
 export default defineComponent({
-  name: 'ApartmentList',
+  name: 'StatusList',
   components: {
-    ApartmentInfo
+    ApartmentStatus
   },
   props: {
     apartmentList: {

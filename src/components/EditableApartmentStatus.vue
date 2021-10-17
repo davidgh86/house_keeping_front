@@ -37,7 +37,7 @@
 import { defineComponent } from 'vue'
 
 export default defineComponent({
-  name: 'EditableApartmentInfo',
+  name: 'EditableApartmentStatus',
   props: {
     apartmentInfo: {
       type: Object,

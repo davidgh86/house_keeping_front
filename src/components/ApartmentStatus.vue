@@ -10,7 +10,7 @@
 import { defineComponent } from 'vue'
 
 export default defineComponent({
-  name: 'ApartmentInfo',
+  name: 'ApartmentStatus',
   props: {
     apartmentInfo: {
       type: Object,

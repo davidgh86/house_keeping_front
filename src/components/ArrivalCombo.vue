@@ -55,7 +55,7 @@
 import { defineComponent } from "vue";
 
 export default defineComponent({
-  name: "ApartmentCombo",
+  name: "ArrivalCombo",
   props: {
     allApartments:{
       type: Array,

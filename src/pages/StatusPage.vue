@@ -3,18 +3,18 @@
     <div class="header"> ARRIVAL APARTMENTS LIST - STATUS -</div>
     <div class="date">01/11/2021</div>
 
-    <ApartmentList :apartmentList="apartmentsInfo" class="apartment_list" />
+    <StatusList :apartmentList="apartmentsInfo" class="apartment_list" />
   </div>
 </template>
 
 <script>
 import { defineComponent } from "vue";
-import ApartmentList from "components/ApartmentList.vue";
+import StatusList from "components/StatusList.vue";
 
 export default defineComponent({
-  name: "Apartments",
+  name: "StatusPage",
   components: {
-    ApartmentList,
+    StatusList,
   },
   data: function () {
     return {

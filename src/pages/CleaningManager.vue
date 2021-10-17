@@ -8,7 +8,7 @@
 
 <script>
 import { defineComponent } from "vue";
-import EditableApartmentInfo from "components/EditableApartmentInfo.vue";
+import EditableApartmentInfo from "src/components/EditableApartmentStatus.vue";
 
 export default defineComponent({
   name: "CleaningManager",

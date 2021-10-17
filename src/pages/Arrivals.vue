@@ -6,7 +6,7 @@
     <div class="selectionbox">
       <div v-for="(comboId, index) in combosIds"
           :key="comboId" class="apt-row" v-bind:style="getStyleRow(index + 1)">
-        <apartment-combo :allApartments="allApartments" 
+        <ArrivalCombo :allApartments="allApartments" 
           @confirmEdition="confirmEdition(comboId, $event)" 
           @changeItem="updateApartment(comboId, $event)"
           @delete="removeElement(comboId)"/>
@@ -34,12 +34,12 @@
 <script>
 import { v4 as uuidv4 } from "uuid";
 import { defineComponent } from "vue";
-import ApartmentCombo from "components/ApartmentCombo.vue";
+import ArrivalCombo from "components/ArrivalCombo.vue";
 
 export default defineComponent({
-  name: "Admin",
+  name: "Arrivals",
   components: {
-    ApartmentCombo
+    ArrivalCombo
   },
   setup() {
     return {
