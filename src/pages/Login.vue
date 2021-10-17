@@ -51,7 +51,7 @@ export default defineComponent({
   grid-row: 1;
   background-image: linear-gradient(to right, #009eda, #025389);
   color: white;
-  font-family: "Open Sans";
+  font-family: "Arial";
   font-style: normal;
   font-size: 4.7rem;
   text-align: center;
@@ -60,7 +60,7 @@ export default defineComponent({
 .subheading {
   grid-column: 1;
   grid-row: 2;
-  font-family: "Open Sans";
+  font-family: "Arial";
   font-style: normal;
   font-size: 5rem;
   text-align: center;
@@ -73,7 +73,7 @@ div.loginbox {
   grid-auto-rows: minmax(6.25rem, auto);
   text-align: center;
   border-top: 6.25rem;
-  font-family: "Open Sans";
+  font-family: "Arial";
   font-weight: 300;
   background-color: #d9d9d9;
 }
@@ -124,7 +124,7 @@ div.loginbox {
   text-align: center;
   margin-left: auto;
   margin-right: auto;
-  font-family: "Open Sans";
+  font-family: "Arial";
   font-size: 4.37rem;
   font-weight: 600;
   background-color: #025389;

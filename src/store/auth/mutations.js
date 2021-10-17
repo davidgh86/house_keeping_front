@@ -2,11 +2,11 @@ export function auth_request (state) {
     state.status = 'loading'
 }
 
-export function auth_success(state, token, user, role){
+export function auth_success(state, userData){
     state.status = 'success'
-    state.token = token
-    state.user = user
-    state.role = role
+    state.token = userData.token
+    state.user = userData.user
+    state.role = userData.role
 }
 
 export function auth_error(state){

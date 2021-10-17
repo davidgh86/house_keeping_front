@@ -1,6 +1,6 @@
 <template>
   <div class="wrapper">
-    <div class="header">ARRIVAL APARTMENTS LIST - STATUS</div>
+    <div class="header"> ARRIVAL APARTMENTS LIST - STATUS -</div>
     <div class="date">01/11/2021</div>
 
     <ApartmentList :apartmentList="apartmentsInfo" class="apartment_list" />
@@ -30,23 +30,24 @@ export default defineComponent({
 
 <style scoped>
 .wrapper {
-  font-family: "Open Sans";
+  font-family: "Arial";
   font-style: normal;
   text-align: center;
-  font-size: 1.5625rem;
+  font-size: 3rem;
 }
 .header {
-  background-color: #025389;
+  background-image: linear-gradient(to right, #009eda, #025389);
   color: white;
-  font-family: "Open Sans";
+  font-family: "Arial";
   font-style: normal;
-  font-size: 3.125rem;
+  font-size: 2.5rem;
   text-align: center;
+  font-weight: 200;
 }
 .date {
-  font-family: "Open Sans";
+  font-family: "Arial";
   font-style: normal;
-  font-size: 3.125rem;
+  font-size: 2rem;
   text-align: center;
 }
 

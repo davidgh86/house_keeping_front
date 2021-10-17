@@ -1,19 +1,19 @@
 import axios from 'axios'
 
-export function login ({commit}, user) {
+export function login ({commit}, usr) {
     return new Promise((resolve, reject) => {
         commit('auth_request')
 
         axios.post(process.env.API_REST_URL+'/user/login', {
-            username: user.usr,
-            password: user.pwd
+            username: usr.usr,
+            password: usr.pwd
         })
         .then((response) => {
             const token = response.data.token;
             const user = response.data.user;
             const role = response.data.role;
             localStorage.setItem('token', token)
-            commit('auth_success', token, user, role)
+            commit('auth_success', {token, user, role})
             resolve({token, user, role})
         })
         .catch((err) => {

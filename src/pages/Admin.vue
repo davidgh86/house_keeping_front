@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <div class="header">HSK Admin</div>
-    <div class="subheading">XX/XX/XXXX</div>
+    <div class="date">XX/XX/XXXX</div>
 
     <div class="selectionbox">
       <div v-for="(comboId, index) in combosIds"
@@ -130,20 +130,20 @@ export default defineComponent({
   grid-row: 1;
   background-image: linear-gradient(to right, #009eda, #025389);
   color: white;
-  font-family: "Open Sans";
+  font-family: "Arial";
   font-style: normal;
-  font-size: 4.6875rem;
+  font-size: 1.1rem;
   text-align: center;
   padding: 0.9375rem;
 }
-.subheading {
+.date {
   grid-column: 1;
   grid-row: 2;
-  font-family: "Open Sans";
+  font-family: "Arial";
   font-style: normal;
-  font-size: 5rem;
+  font-size: 1rem;
   text-align: center;
-  margin-top: 3.125rem;
+  margin-top: 1rem;
   margin-bottom: 3.125rem;
 }
 div.selectionbox {
@@ -153,7 +153,7 @@ div.selectionbox {
   grid-gap: 0.9375rem;
   text-align: center;
   border-top: 6.25rem;
-  font-family: "Open Sans";
+  font-family: "Arial";
   font-weight: 300;
 }
 .apt-row {
@@ -180,14 +180,14 @@ div.selectionbox {
   grid-row: 9;
   border-radius: 1.5625rem;
   display: block;
-  height: 6.25rem;
-  width: 25rem;
+  height: 3rem;
+  width: 10rem;
   text-align: center;
   margin-left: auto;
   margin-right: auto;
-  font-family: "Open Sans";
-  font-size: 4.375rem;
-  font-weight: 600;
+  font-family: "Arial";
+  font-size: 1rem;
+  font-weight: 200;
   background-color: #025389;
   color: white;
 }
@@ -195,7 +195,8 @@ img {
   grid-column: 2;
   grid-row: 10;
   display: block;
-  margin-top: 1.5625rem;
+  width: 12rem;
+  height: auto;
   margin-left: auto;
   margin-right: auto;
 }

@@ -104,7 +104,8 @@ export default defineComponent({
     }),
     visibleLinkList: function() {
       return linksList.filter(item =>{
-        console.log(this.getRole())
+        console.log(this.isLoggedIn)
+        console.log(this.getRole)
         return item.roles.includes(this.getRole)
       });
 
