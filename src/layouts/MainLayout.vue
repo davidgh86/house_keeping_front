@@ -50,8 +50,14 @@ import EssentialLink from 'components/EssentialLink.vue'
 import LogoutLink from 'components/LogoutLink.vue'
 const linksList = [
   {
-    title: 'Edit Apartments',
-    icon: 'edit',
+    title: 'Apartments',
+    icon: 'apartment',
+    link: '/admin',
+    roles: ['admin']
+  },
+  {
+    title: 'Arrivals',
+    icon: 'flight_land',
     link: '/admin',
     roles: ['admin']
   },
@@ -63,7 +69,7 @@ const linksList = [
   },
   {
     title: 'Show status',
-    icon: 'apartment',
+    icon: 'maps_home_work',
     link: '/apartments',
     roles: ['admin', 'user']
   },
@@ -104,8 +110,6 @@ export default defineComponent({
     }),
     visibleLinkList: function() {
       return linksList.filter(item =>{
-        console.log(this.isLoggedIn)
-        console.log(this.getRole)
         return item.roles.includes(this.getRole)
       });
 
