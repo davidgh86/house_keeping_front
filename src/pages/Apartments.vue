@@ -88,8 +88,7 @@ export default defineComponent({
     const loading = ref(false)
     const pagination = ref({
       page: 1,
-      rowsPerPage: 3,
-      rowsNumber: 10
+      rowsPerPage: 10
     })
     const serviceApi = inject('api')
 
@@ -154,7 +153,7 @@ export default defineComponent({
 
       let offset = (page - 1) * rowsPerPage
       let limit = rowsPerPage
-      
+
       if (limit === 0){
         limit = pagination.value.rowsNumber
       }
