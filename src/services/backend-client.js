@@ -9,7 +9,7 @@ class BackendClient {
 
         const token = localStorage.getItem('token')
         if (token) {
-            this.client.defaults.headers.common['Authorization'] = token
+            this.client.defaults.headers.common['Authorization'] = "Bearer " + token
         }
 
         this.client.interceptors.response.use(undefined, function (err) {
@@ -29,7 +29,9 @@ class BackendClient {
                 password: password
             })
             .then((response) => {
-                this.client.defaults.headers.common['Authorization'] = response.data.token
+                this.client.defaults.headers.common['Authorization'] = "Bearer " + response.data.token
+                // create options panel to edit time zone in case needed
+                this.client.defaults.headers.common['Time-Zone'] = Intl.DateTimeFormat().resolvedOptions().timeZone;
                 resolve(response.data)
             }, (error) => {
                 reject(error)
@@ -38,11 +40,26 @@ class BackendClient {
     }
 
     setAuthenticationHeaders(token){
-        this.client.defaults.headers.common['Authorization'] = token
+        this.client.defaults.headers.common['Authorization'] = "Bearer " + token
+        this.client.defaults.headers.common['Time-Zone'] = Intl.DateTimeFormat().resolvedOptions().timeZone;
     }
 
     logout() {
         delete this.client.defaults.headers.common['Authorization']
+        delete this.client.defaults.headers.common['Time-Zone']
+    }
+
+    getAllApartments(offset, limit){
+        return new Promise((resolve, reject) => {
+            this.client.get(process.env.API_REST_URL+'/apartment', 
+                                            { params: { offset: offset, limit: limit } })
+                .then((response) => {
+                    resolve(response)
+                })
+                .catch((error) => {
+                    reject(error)
+                })
+        })
     }
 }
 

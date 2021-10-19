@@ -5,9 +5,10 @@ const routes = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('src/pages/StatusPage.vue') },
-      { path: 'apartments', component: () => import('src/pages/StatusPage.vue') },
+      { path: 'status', component: () => import('src/pages/StatusPage.vue') },
       { path: 'team', component: () => import('pages/CleaningManager.vue') },
-      { path: 'admin', component: () => import('src/pages/Arrivals.vue') }
+      { path: 'arrivals', component: () => import('src/pages/Arrivals.vue') },
+      { path: 'apartments', component: () => import('src/pages/Apartments.vue') }
     ],
     meta: {
       requiresAuth: true

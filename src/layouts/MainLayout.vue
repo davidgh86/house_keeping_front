@@ -52,13 +52,13 @@ const linksList = [
   {
     title: 'Apartments',
     icon: 'apartment',
-    link: '/admin',
+    link: '/apartments',
     roles: ['admin']
   },
   {
     title: 'Arrivals',
     icon: 'flight_land',
-    link: '/admin',
+    link: '/arrivals',
     roles: ['admin']
   },
   {
@@ -70,7 +70,7 @@ const linksList = [
   {
     title: 'Show status',
     icon: 'maps_home_work',
-    link: '/apartments',
+    link: '/status',
     roles: ['admin', 'user']
   },
 ];
