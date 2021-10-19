@@ -52,7 +52,7 @@
 
 <script>
 
-import { defineComponent, ref, onMounted, getCurrentInstance, inject } from "vue";
+import { defineComponent, ref, onMounted, inject } from "vue";
 
 const columns = [
   {
@@ -153,8 +153,13 @@ export default defineComponent({
       loading.value = true
 
       let offset = (page - 1) * rowsPerPage
+      let limit = rowsPerPage
+      
+      if (limit === 0){
+        limit = pagination.value.rowsNumber
+      }
 
-      serviceApi.getAllApartments(offset, rowsPerPage).then(response => {
+      serviceApi.getAllApartments(offset, limit).then(response => {
         pagination.value.page = response.data.page
         pagination.value.rowsPerPage = rowsPerPage
         pagination.value.rowsNumber = response.data.totalDocs
