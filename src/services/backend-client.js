@@ -49,6 +49,30 @@ class BackendClient {
         delete this.client.defaults.headers.common['Time-Zone']
     }
 
+    createNewApartment(apartment) {
+        return new Promise((resolve, reject) => {
+            this.client.post('/apartment', apartment)
+                .then((response) => resolve(response.data))
+                .catch((error) => reject(error))
+        });
+    }
+
+    modifyApartment(id, apartment) {
+        return new Promise((resolve, reject) => {
+            this.client.put('/apartment/'+id, apartment)
+                .then((response) => resolve(response.data))
+                .catch((error) => reject(error))
+        });
+    }
+
+    removeApartment(id) {
+        return new Promise((resolve, reject) => {
+            this.client.delete('/apartment/'+id)
+                .then((response) => resolve(response.data))
+                .catch((error) => reject(error))
+        });
+    }
+
     getAllApartments(offset, limit){
         return new Promise((resolve, reject) => {
             this.client.get(process.env.API_REST_URL+'/apartment', 

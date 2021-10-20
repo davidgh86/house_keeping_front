@@ -93,8 +93,11 @@ export default defineComponent({
     const serviceApi = inject('api')
 
     function deleteApartment(apartmentId) {
-      alert("remove "+apartmentId)
-      rows.value = rows.value.filter(apt => apt._id !== apartmentId)
+      serviceApi.removeApartment(apartmentId).then((response) => {
+        rows.value = rows.value.filter(apt => apt._id !== apartmentId)
+      }).catch((error) => {
+        alert("Remove apartment failed")
+      })
     }
 
     function expandRow(properties){
@@ -110,14 +113,14 @@ export default defineComponent({
     }
 
     function updateApartment(id, name, keys){
-      return new Promise((resolve, reject) => {
-        resolve("OK")
-      });
+      return serviceApi.modifyApartment(id, {
+        apartmentName: name,
+        keys: keys
+      })
     }
 
     function confirmUpdate(properties) {
       updateApartment(properties.key, properties.row.apartmentName, properties.row.keys).then(() => {
-        alert(properties.key + ", " + properties.row.apartmentName + ", " +properties.row.keys)
       }).catch((error) => {
         alert("Error updating")
       }).finally(() => {
@@ -134,7 +137,17 @@ export default defineComponent({
     }
 
     function confirmCreate(){
-       alert("created "+newApartmentName.value+ " "+ newApartmentKey.value)
+       serviceApi.createNewApartment({
+         apartmentName: newApartmentName.value,
+         keys: newApartmentKey.value
+       }).then((response) => {
+         // TODO loading
+          onRequest({
+            pagination: pagination.value
+          })
+       }).catch((error) => {
+         alert("Apartment creation failed")
+       })
     }
 
     function cancelCreate(){
