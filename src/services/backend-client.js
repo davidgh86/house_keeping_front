@@ -24,7 +24,7 @@ class BackendClient {
 
     login(username, password) {
         return new Promise((resolve, reject) => {
-            this.client.post(process.env.API_REST_URL+'/user/login', {
+            this.client.post('/user/login', {
                 username: username,
                 password: password
             })
@@ -47,6 +47,42 @@ class BackendClient {
     logout() {
         delete this.client.defaults.headers.common['Authorization']
         delete this.client.defaults.headers.common['Time-Zone']
+    }
+
+    getAllUsers(offset, limit){
+        return new Promise((resolve, reject) => {
+            this.client.get('/user', { params: { offset: offset, limit: limit } })
+                .then((response) => {
+                    resolve(response)
+                })
+                .catch((error) => {
+                    reject(error)
+                })
+        })
+    }
+
+    removeUser(username) {
+        return new Promise((resolve, reject) => {
+            this.client.delete('/user/'+username)
+                .then((response) => resolve(response.data))
+                .catch((error) => reject(error))
+        });
+    }
+
+    modifyUser(username, userData) {
+        return new Promise((resolve, reject) => {
+            this.client.put('/user/'+username, userData)
+                .then((response) => resolve(response.data))
+                .catch((error) => reject(error))
+        });
+    }
+
+    createNewUser(user) {
+        return new Promise((resolve, reject) => {
+            this.client.post('/user/register', user)
+                .then((response) => resolve(response.data))
+                .catch((error) => reject(error))
+        });
     }
 
     createNewApartment(apartment) {
@@ -75,7 +111,7 @@ class BackendClient {
 
     getAllApartments(offset, limit){
         return new Promise((resolve, reject) => {
-            this.client.get(process.env.API_REST_URL+'/apartment', 
+            this.client.get('/apartment', 
                                             { params: { offset: offset, limit: limit } })
                 .then((response) => {
                     resolve(response)

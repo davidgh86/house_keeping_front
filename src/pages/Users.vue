@@ -3,11 +3,11 @@
     <div class="header">HSK Admin</div>
 
     <q-table
-      title="Apartments"
+      title="Users"
       :rows="rows"
       :columns="columns"
       v-model:pagination="pagination"
-      row-key="_id"
+      row-key="username"
       :loading="loading"
       @request="onRequest"
     >
@@ -15,7 +15,7 @@
         <q-tr :props="props">
           <q-td auto-width>
             <q-btn size="sm" color="primary" round dense @click="expandRow(props)" icon="edit"></q-btn>&nbsp;
-            <q-btn size="sm" color="primary" round dense @click="deleteApartment(props.key)" icon="delete"></q-btn>
+            <q-btn size="sm" color="primary" round dense @click="deleteUser(props.key)" icon="delete"></q-btn>
           </q-td>
           <q-td
             v-for="col in props.cols"
@@ -27,10 +27,9 @@
         </q-tr>
         <q-tr v-show="props.expand" :props="props">
           <q-td colspan="100%">
-            <!-- <div class="text-left">This is expand slot for row above: {{ props.key }} {{ props.row.apartmentName }}.</div> -->
             <div class="text-left">
-              <q-input v-model="props.row.apartmentName" label="Apartment name"></q-input>
-              <q-input type="number" v-model="props.row.keys" dense autofocus label="Number of keys"></q-input>
+              <q-input v-model="props.row.email" label="Email"></q-input>
+              <q-input v-model="props.row.role" label="Role"></q-input>
               <q-btn color="primary" label="OK" @click="confirmUpdate(props)"></q-btn>
               <q-btn color="primary" label="Cancel" @click="cancelUpdate(props)"></q-btn>
             </div>
@@ -38,10 +37,12 @@
         </q-tr>
       </template>
     </q-table>
-    <div>Create new apartment</div>
+    <div>Create new user</div>
     <div>
-      <q-input v-model="newApartmentName"  label="Apartment name"></q-input>
-      <q-input type="number" v-model="newApartmentKey" dense autofocus label="Number of keys"></q-input>
+      <q-input v-model="newUserName" label="Username"></q-input>
+      <q-input v-model="newPassword" label="Password"></q-input>
+      <q-input v-model="newUserEmail" label="Email"></q-input>
+      <q-input v-model="newUserRole" label="Role"></q-input>
       <q-btn color="primary" label="OK" @click="confirmCreate()"></q-btn>
       <q-btn color="primary" label="Cancel" @click="cancelCreate()"></q-btn>
     </div>
@@ -58,19 +59,26 @@ const columns = [
     
   },
   {
-    name: 'name',
+    name: 'username',
     required: true,
-    label: 'Apartment name',
+    label: 'Username',
     align: 'left',
-    field: 'apartmentName',
+    field: 'username',
   },
   {
-    name: 'keys',
+    name: 'email',
     required: true,
-    label: 'Number of keys',
+    label: 'Email',
     align: 'left',
-    field: 'keys',
+    field: 'email',
   },
+  {
+    name: 'role',
+    required: true,
+    label: 'Role',
+    align: 'left',
+    field: 'role',
+  }
 ]
 
 
@@ -78,10 +86,12 @@ const columns = [
 export default defineComponent({
   name: "Apartments",
   setup () {
-    const newApartmentName = ref('')
-    const newApartmentKey = ref('')
-    const editApartmentName = ref('')
-    const editApartmentKeys = ref()
+    const newUserEmail = ref('')
+    const newUserRole = ref('')
+    const newUserName = ref('')
+    const newPassword = ref('')
+    const editUserEmail = ref('')
+    const editUserRole = ref()
     const elementExpanded = ref(false)
     const rows = ref([])
     const loading = ref(false)
@@ -91,9 +101,9 @@ export default defineComponent({
     })
     const serviceApi = inject('api')
 
-    function deleteApartment(apartmentId) {
-      serviceApi.removeApartment(apartmentId).then((response) => {
-        rows.value = rows.value.filter(apt => apt._id !== apartmentId)
+    function deleteUser(username) {
+      serviceApi.removeUser(username).then((response) => {
+        rows.value = rows.value.filter(usr => usr.username !== username)
       }).catch((error) => {
         alert("Remove apartment failed")
       })
@@ -101,8 +111,8 @@ export default defineComponent({
 
     function expandRow(properties){
       if (!elementExpanded.value){
-        editApartmentName.value = properties.row.apartmentName
-        editApartmentKeys.value = properties.row.keys
+        editUserEmail.value = properties.row.email
+        editUserRole.value = properties.row.role
         properties.expand = true
         elementExpanded.value = true
       } else {
@@ -111,15 +121,16 @@ export default defineComponent({
       }
     }
 
-    function updateApartment(id, name, keys){
-      return serviceApi.modifyApartment(id, {
-        apartmentName: name,
-        keys: keys
+    function updateUser(username, email, role){
+      return serviceApi.modifyUser(username, {
+        username: username,
+        email: email,
+        role: role
       })
     }
 
     function confirmUpdate(properties) {
-      updateApartment(properties.key, properties.row.apartmentName, properties.row.keys).then(() => {
+      updateUser(properties.key, properties.row.email, properties.row.role).then(() => {
       }).catch((error) => {
         alert("Error updating")
       }).finally(() => {
@@ -129,16 +140,18 @@ export default defineComponent({
     }
 
     function cancelUpdate(properties) {
-      properties.row.apartmentName = editApartmentName.value
-      properties.row.keys = editApartmentKeys.value
+      properties.row.email = editUserEmail.value
+      properties.row.role = editUserRole.value
       properties.expand = false
       elementExpanded.value = false
     }
 
     function confirmCreate(){
-       serviceApi.createNewApartment({
-         apartmentName: newApartmentName.value,
-         keys: newApartmentKey.value
+       serviceApi.createNewUser({
+         username: newUserName.value,
+         password: newPassword.value,
+         email: newUserEmail.value,
+         role: newUserRole.value
        }).then((response) => {
          // TODO loading
           onRequest({
@@ -150,8 +163,10 @@ export default defineComponent({
     }
 
     function cancelCreate(){
-      newApartmentName.value = ''
-      newApartmentKey.value=''
+      newUserEmail.value = ''
+      newUserRole.value =''
+      newUserName.value = ''
+      newPassword.value =''
     }
 
     function onRequest (props) {
@@ -170,7 +185,7 @@ export default defineComponent({
         limit = pagination.value.rowsNumber
       }
 
-      serviceApi.getAllApartments(offset, limit).then(response => {
+      serviceApi.getAllUsers(offset, limit).then(response => {
         pagination.value.page = response.data.page
         pagination.value.rowsPerPage = rowsPerPage
         pagination.value.rowsNumber = response.data.totalDocs
@@ -199,11 +214,13 @@ export default defineComponent({
       columns,
       rows,
 
-      newApartmentName,
-      newApartmentKey,
+      newUserEmail,
+      newUserRole,
+      newUserName,
+      newPassword,
 
       onRequest,
-      deleteApartment,
+      deleteUser,
       expandRow,
       confirmUpdate,
       cancelUpdate,

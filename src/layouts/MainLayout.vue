@@ -50,6 +50,12 @@ import EssentialLink from 'components/EssentialLink.vue'
 import LogoutLink from 'components/LogoutLink.vue'
 const linksList = [
   {
+    title: 'Users',
+    icon: 'manage_accounts',
+    link: '/users',
+    roles: ['admin']
+  },
+  {
     title: 'Apartments',
     icon: 'apartment',
     link: '/apartments',
