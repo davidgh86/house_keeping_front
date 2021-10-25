@@ -170,12 +170,12 @@ export default defineComponent({
         limit = pagination.value.rowsNumber
       }
 
-      serviceApi.getAllApartments(offset, limit).then(response => {
-        pagination.value.page = response.data.page
+      serviceApi.getApartments(offset, limit).then(response => {
+        pagination.value.page = response.page
         pagination.value.rowsPerPage = rowsPerPage
-        pagination.value.rowsNumber = response.data.totalDocs
+        pagination.value.rowsNumber = response.totalDocs
 
-        let returnedData = response.data.docs
+        let returnedData = response.docs
         rows.value.splice(0, rows.value.length, ...returnedData)
         //rows.value = response.data.docs
 

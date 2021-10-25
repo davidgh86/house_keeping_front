@@ -109,17 +109,37 @@ class BackendClient {
         });
     }
 
-    getAllApartments(offset, limit){
+    getApartments(offset, limit){
+
         return new Promise((resolve, reject) => {
-            this.client.get('/apartment', 
-                                            { params: { offset: offset, limit: limit } })
+            this.client.get('/apartment', { params: { offset: offset, limit: limit } })
                 .then((response) => {
-                    resolve(response)
+                    resolve(response.data)
                 })
                 .catch((error) => {
                     reject(error)
                 })
         })
+    }
+
+    getAllApartments(){
+        return new Promise((resolve, reject) => {
+            this.client.get('/apartment/all')
+                .then((response) => {
+                    resolve(response.data)
+                })
+                .catch((error) => {
+                    reject(error)
+                })
+        })
+    }
+
+    createNewBooking(booking) {
+        return new Promise((resolve, reject) => {
+            this.client.post('/arrival', booking)
+                .then((response) => resolve(response.data))
+                .catch((error) => reject(error))
+        });
     }
 }
 

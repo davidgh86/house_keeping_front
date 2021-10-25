@@ -39,13 +39,28 @@
     </q-table>
     <div>Create new user</div>
     <div>
-      <q-input v-model="newUserName" label="Username"></q-input>
-      <q-input v-model="newPassword" label="Password"></q-input>
-      <q-input v-model="newUserEmail" label="Email"></q-input>
-      <q-input v-model="newUserRole" label="Role"></q-input>
+      <q-select filled v-model="newApartment" :options="apartments" label="Filled"></q-select>
+      <q-input type="number" v-model="newApartment.keys" label="Provided keys"></q-input>
+      <div>
+        <div class="q-gutter-md row items-start">
+          <div class="seletor-time-container">
+            <div>Pick time range</div>
+            <q-date v-model="dateRange" mask="YYYY-MM-DD HH:mm" range></q-date>
+          </div>
+          <div class="seletor-time-container">
+            <q-toggle v-model="newCheckInTimeNull" label="Specified check in Time" class="selector-time-toogle-container"></q-toggle>
+            <q-time v-model="dateRange.from" mask="YYYY-MM-DD HH:mm" v-if="!newCheckInTimeNull" class="selector-time-time-container"></q-time>
+          </div>
+          <div class="seletor-time-container">
+            <q-toggle v-model="newCheckOutTimeNull" label="Specified check out Time" class="selector-time-toogle-container"></q-toggle>
+            <q-time v-model="dateRange.to" mask="YYYY-MM-DD HH:mm" v-if="!newCheckOutTimeNull" class="selector-time-time-container"></q-time>
+          </div>
+        </div>
+      </div>
       <q-btn color="primary" label="OK" @click="confirmCreate()"></q-btn>
       <q-btn color="primary" label="Cancel" @click="cancelCreate()"></q-btn>
     </div>
+    
     
   </div>
 </template>
@@ -149,16 +164,12 @@ const columns = [
 export default defineComponent({
   name: "Arrivals",
   setup () {
-    const arrivalDate = ref(new Date())
-    const newApartmentId = ref('')
+    const apartments = ref([])
+    const newApartment = ref('')
     const newExpectedKeys = ref('')
-    const newReturnedKeys = ref('')
-    const newCheckInDate = ref('')
-    const newCheckInTimeNull = ref('')
-    const newCheckOutDate = ref('')
-    const newCheckOutTimeNull = ref('')
-    const editUserEmail = ref('')
-    const editUserRole = ref()
+    const dateRange = ref({ from: '', to: '' })
+    const newCheckInTimeNull = ref(false)
+    const newCheckOutTimeNull = ref(false)
     const elementExpanded = ref(false)
     const rows = ref([])
     const loading = ref(false)
@@ -214,26 +225,42 @@ export default defineComponent({
     }
 
     function confirmCreate(){
-       serviceApi.createNewUser({
-         username: newUserName.value,
-         password: newPassword.value,
-         email: newUserEmail.value,
-         role: newUserRole.value
-       }).then((response) => {
-         // TODO loading
-          onRequest({
-            pagination: pagination.value
-          })
-       }).catch((error) => {
-         alert("Apartment creation failed")
-       })
+      let dateFrom = dateRange.value.from
+      if (newCheckInTimeNull.value) {
+        dateFrom = dateFrom.slice(0, -5) + "15:30"
+      }
+      dateFrom = Date.parse(dateFrom)
+
+      let dateTo = dateRange.value.to
+      if (newCheckOutTimeNull.value) {
+        dateTo = dateTo.slice(0, -5) + "10:30"
+      }
+      dateTo = Date.parse(dateTo)
+
+      serviceApi.createNewBooking({
+        apartment: newApartment.value.apartmentId,
+        expectedKeys: newApartment.value.keys,
+        checkInDate: dateFrom,
+        checkInTimeNull: newCheckInTimeNull.value,
+        checkOutDate: dateTo,
+        checkOutTimeNull: newCheckOutTimeNull.value
+      }).then((response) => {
+        // TODO loading
+        onRequest({
+          pagination: pagination.value
+        })
+      }).catch((error) => {
+        alert("Error creating Booking: "+ error.response.data.message)
+      })
     }
 
     function cancelCreate(){
-      newUserEmail.value = ''
-      newUserRole.value =''
-      newUserName.value = ''
-      newPassword.value =''
+
+      newApartment.value = ''
+      newExpectedKeys.value = ''
+      dateRange.value = { from: '', to: '' }
+      newCheckInTimeNull.value = false
+      newCheckOutTimeNull.value = false
     }
 
     function onRequest (props) {
@@ -273,6 +300,18 @@ export default defineComponent({
       onRequest({
         pagination: pagination.value
       })
+      
+      serviceApi.getAllApartments().then(response => {
+        apartments.value = response.map(item => {
+          return {
+            label: item.apartmentName,
+            apartmentId: item._id,
+            keys: item.keys
+          }
+        })
+      }).catch(error => {
+        alert("Error retrieving apartments")
+      })
     })
 
     return {
@@ -281,10 +320,13 @@ export default defineComponent({
       columns,
       rows,
 
-      newUserEmail,
-      newUserRole,
-      newUserName,
-      newPassword,
+      apartments,
+
+      newApartment,
+      dateRange,
+      newExpectedKeys,
+      newCheckInTimeNull,
+      newCheckOutTimeNull,
 
       onRequest,
       deleteArrival,
@@ -321,6 +363,10 @@ export default defineComponent({
   text-align: center;
   margin-top: 1rem;
   margin-bottom: 3.125rem;
+}
+.seletor-time-container {
+  display: grid;
+  grid-template-columns: 1fr;
 }
 
 
