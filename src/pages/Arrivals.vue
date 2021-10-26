@@ -28,8 +28,14 @@
         <q-tr v-show="props.expand" :props="props">
           <q-td colspan="100%">
             <div class="text-left">
-              <q-input v-model="props.row.email" label="Email"></q-input>
-              <q-input v-model="props.row.role" label="Role"></q-input>
+              <q-select v-model="modifyApartment" :options="apartments" label="Apartment"></q-select>
+              <q-input type="number" v-model="modifyKeys" label="Keys"></q-input>
+              <q-input type="date" v-model="modifyCheckInDate" label="Check in date"></q-input>
+              <q-toggle v-model="modifySpecifyCheckInTime"></q-toggle>
+              <q-input v-if="modifySpecifyCheckInTime" type="time" v-model="modifyCheckInTime" label="Check in time"></q-input>
+              <q-input type="date" v-model="modifyCheckOutDate" label="Check out date"></q-input>
+              <q-toggle v-model="modifySpecifyCheckOutTime"></q-toggle>
+              <q-input v-if="modifySpecifyCheckOutTime" type="time" v-model="modifyCheckOutTime" label="Check out time"></q-input>
               <q-btn color="primary" label="OK" @click="confirmUpdate(props)"></q-btn>
               <q-btn color="primary" label="Cancel" @click="cancelUpdate(props)"></q-btn>
             </div>
@@ -39,7 +45,7 @@
     </q-table>
     <div>Create new user</div>
     <div>
-      <q-select filled v-model="newApartment" :options="apartments" label="Filled"></q-select>
+      <q-select filled v-model="newApartment" :options="apartments" label="Apartment"></q-select>
       <q-input type="number" v-model="newApartment.keys" label="Provided keys"></q-input>
       <div>
         <div class="q-gutter-md row items-start">
@@ -48,12 +54,12 @@
             <q-date v-model="dateRange" mask="YYYY-MM-DD HH:mm" range></q-date>
           </div>
           <div class="seletor-time-container">
-            <q-toggle v-model="newCheckInTimeNull" label="Specified check in Time" class="selector-time-toogle-container"></q-toggle>
-            <q-time v-model="dateRange.from" mask="YYYY-MM-DD HH:mm" v-if="!newCheckInTimeNull" class="selector-time-time-container"></q-time>
+            <q-toggle v-model="newSpecifyCheckInTime" label="Specified check in Time" class="selector-time-toogle-container"></q-toggle>
+            <q-time v-model="dateRange.from" mask="YYYY-MM-DD HH:mm" v-if="newSpecifyCheckInTime" class="selector-time-time-container"></q-time>
           </div>
           <div class="seletor-time-container">
-            <q-toggle v-model="newCheckOutTimeNull" label="Specified check out Time" class="selector-time-toogle-container"></q-toggle>
-            <q-time v-model="dateRange.to" mask="YYYY-MM-DD HH:mm" v-if="!newCheckOutTimeNull" class="selector-time-time-container"></q-time>
+            <q-toggle v-model="newSpecifyCheckOutTime" label="Specified check out Time" class="selector-time-toogle-container"></q-toggle>
+            <q-time v-model="dateRange.to" mask="YYYY-MM-DD HH:mm" v-if="newSpecifyCheckOutTime" class="selector-time-time-container"></q-time>
           </div>
         </div>
       </div>
@@ -76,14 +82,16 @@ const columns = [
   {
     name: 'apartment',
     required: true,
-    label: 'Apartment name',
+    label: 'Apartment',
     align: 'left',
-    field: 'apartment.apartmentName',
+    field: row => {
+      return row.apartment.apartmentName
+    },
   },
   {
     name: 'expectedKeys',
     required: true,
-    label: 'Key provided',
+    label: 'Keys',
     align: 'left',
     field: 'expectedKeys',
   },
@@ -99,28 +107,32 @@ const columns = [
     required: true,
     label: 'Check in date',
     align: 'left',
-    field: 'checkInDate',
+    field: row => {
+      return new Date(row.checkInDate).toLocaleString();
+    }
   },
   {
-    name: 'checkInTimeNull',
+    name: 'specifiedCheckInTime',
     required: true,
     label: 'Arrival time confirmed',
     align: 'left',
-    field: 'checkInTimeNull',
+    field: 'specifiedCheckInTime',
   },
   {
     name: 'checkOutDate',
     required: true,
     label: 'Check out date',
     align: 'left',
-    field: 'checkOutDate',
+    field: row => {
+      return new Date(row.checkOutDate).toLocaleString();
+    }
   },
   {
-    name: 'checkOutTimeNull',
+    name: 'specifiedCheckOutTime',
     required: true,
     label: 'Departure time confirmed',
     align: 'left',
-    field: 'checkOutTimeNull',
+    field: 'specifiedCheckOutTime',
   },
   {
     name: 'cleaningStatus',
@@ -135,13 +147,6 @@ const columns = [
         return arrayStatus[arrayStatus.length - 1]
       }
     },
-  },
-  {
-    name: 'timeCleaned',
-    required: true,
-    label: 'Time cleaned',
-    align: 'left',
-    field: 'timeCleaned',
   },
   {
     name: 'timeCleaned',
@@ -168,8 +173,8 @@ export default defineComponent({
     const newApartment = ref('')
     const newExpectedKeys = ref('')
     const dateRange = ref({ from: '', to: '' })
-    const newCheckInTimeNull = ref(false)
-    const newCheckOutTimeNull = ref(false)
+    const newSpecifyCheckInTime = ref(false)
+    const newSpecifyCheckOutTime = ref(false)
     const elementExpanded = ref(false)
     const rows = ref([])
     const loading = ref(false)
@@ -177,6 +182,16 @@ export default defineComponent({
       page: 1,
       rowsPerPage: 10
     })
+
+    const modifyApartment = ref()
+    const modifyCheckInDate = ref()
+    const modifyCheckInTime = ref()
+    const modifyCheckOutDate = ref()
+    const modifyCheckOutTime = ref()
+    const modifySpecifyCheckInTime = ref()
+    const modifySpecifyCheckOutTime = ref()
+    const modifyKeys = ref()
+
     const serviceApi = inject('api')
 
     function deleteArrival(username) {
@@ -189,8 +204,8 @@ export default defineComponent({
 
     function expandRow(properties){
       if (!elementExpanded.value){
-        editUserEmail.value = properties.row.email
-        editUserRole.value = properties.row.role
+        // editUserEmail.value = properties.row.email
+        // editUserRole.value = properties.row.role
         properties.expand = true
         elementExpanded.value = true
       } else {
@@ -226,13 +241,13 @@ export default defineComponent({
 
     function confirmCreate(){
       let dateFrom = dateRange.value.from
-      if (newCheckInTimeNull.value) {
+      if (!newSpecifyCheckInTime.value) {
         dateFrom = dateFrom.slice(0, -5) + "15:30"
       }
       dateFrom = Date.parse(dateFrom)
 
       let dateTo = dateRange.value.to
-      if (newCheckOutTimeNull.value) {
+      if (!newSpecifyCheckOutTime.value) {
         dateTo = dateTo.slice(0, -5) + "10:30"
       }
       dateTo = Date.parse(dateTo)
@@ -241,9 +256,9 @@ export default defineComponent({
         apartment: newApartment.value.apartmentId,
         expectedKeys: newApartment.value.keys,
         checkInDate: dateFrom,
-        checkInTimeNull: newCheckInTimeNull.value,
+        specifiedCheckInTime: newSpecifyCheckInTime.value,
         checkOutDate: dateTo,
-        checkOutTimeNull: newCheckOutTimeNull.value
+        specifiedCheckOutTime: newSpecifyCheckOutTime.value
       }).then((response) => {
         // TODO loading
         onRequest({
@@ -259,8 +274,8 @@ export default defineComponent({
       newApartment.value = ''
       newExpectedKeys.value = ''
       dateRange.value = { from: '', to: '' }
-      newCheckInTimeNull.value = false
-      newCheckOutTimeNull.value = false
+      newSpecifyCheckInTime.value = false
+      newSpecifyCheckOutTime.value = false
     }
 
     function onRequest (props) {
@@ -279,12 +294,12 @@ export default defineComponent({
         limit = pagination.value.rowsNumber
       }
 
-      serviceApi.getAllUsers(offset, limit).then(response => {
-        pagination.value.page = response.data.page
+      serviceApi.getAllBookings(offset, limit).then(response => {
+        pagination.value.page = response.page
         pagination.value.rowsPerPage = rowsPerPage
-        pagination.value.rowsNumber = response.data.totalDocs
+        pagination.value.rowsNumber = response.totalDocs
 
-        let returnedData = response.data.docs
+        let returnedData = response.docs
         rows.value.splice(0, rows.value.length, ...returnedData)
         //rows.value = response.data.docs
 
@@ -325,8 +340,17 @@ export default defineComponent({
       newApartment,
       dateRange,
       newExpectedKeys,
-      newCheckInTimeNull,
-      newCheckOutTimeNull,
+      newSpecifyCheckInTime,
+      newSpecifyCheckOutTime,
+
+      modifyApartment,
+      modifyCheckInDate,
+      modifyCheckInTime,
+      modifyCheckOutDate,
+      modifyCheckOutTime,
+      modifySpecifyCheckInTime,
+      modifySpecifyCheckOutTime,
+      modifyKeys,
 
       onRequest,
       deleteArrival,

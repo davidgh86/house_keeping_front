@@ -141,6 +141,18 @@ class BackendClient {
                 .catch((error) => reject(error))
         });
     }
+
+    getAllBookings(offset, limit){
+        return new Promise((resolve, reject) => {
+            this.client.get('/arrival', { params: { offset: offset, limit: limit } })
+                .then((response) => {
+                    resolve(response.data)
+                })
+                .catch((error) => {
+                    reject(error)
+                })
+        })
+    }
 }
 
 export default BackendClient
