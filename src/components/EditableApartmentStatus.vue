@@ -26,7 +26,7 @@
           color="primary"
           text-color="white"
           icon="send"
-          @click="restoreKey()"
+          @click="sendMessage()"
         ></q-btn>
       <!-- </div> -->
     </div>
@@ -49,6 +49,7 @@ export default defineComponent({
       apartmentInfoData: this.apartmentInfo,
       deliveredKeys: 0,
       showMessageBox: false,
+      interval: null,
     }
   },
   setup(){
@@ -68,19 +69,75 @@ export default defineComponent({
         }else {
           this.apartmentInfoData.cleaningStatus.cleaningStatus = "READY_TO_CLEAN"
         }
+        this.sendUpdateWithTimeout()
+      },
+      sendUpdate: function(){
+        alert("apartment info data " + JSON.stringify(this.apartmentInfoData.cleaningStatus.cleaningStatus) + " deliveredKeys " + this.deliveredKeys)
+        this.interval = null;
+      },
+      sendUpdateWithTimeout: function(){
+        if (this.interval){
+          clearTimeout(this.interval)
+        }
+        this.interval = setTimeout(() => {
+          this.sendUpdate()
+        }, 4000)
       },
       addKey: function (){
         this.deliveredKeys++;
+        this.sendUpdateWithTimeout()
       },
       restoreKey: function() {
         this.deliveredKeys = 0;
+        this.sendUpdateWithTimeout()
       },
       swithMessageBox: function() {
         this.showMessageBox = !this.showMessageBox
+      },
+      sendMessage: function(){
+        alert("send message")
+        this.sendUpdateWithTimeout()
+      },
+      sendOnDestory: function(){
+        if (this.interval){
+          clearTimeout(this.interval)
+          this.sendUpdate()
+        }
       }
     }
   },
-  mounted() {
+  created() {
+    window.addEventListener("beforeunload", function (e) {
+    console.log("aaa1")
+  var confirmationMessage = "\o/";
+
+  //event.preventDefault();
+  
+  console.log("aaa2")
+  e.returnValue = confirmationMessage; 
+  console.log("aaa3")    // Gecko, Trident, Chrome 34+
+  return confirmationMessage;              // Gecko, WebKit, Chrome <34
+});
+  },
+  // mounted() {
+  // },
+  // beforeMount() {
+  //   //window.addEventListener("beforeunload", this.sendOnDestory())
+  // },
+  // unmounted() {
+  //     alert("beforeDestroy")
+  // },
+  // beforeUnmount(){
+  //   this.sendOnDestory()
+  // },
+  methods: {
+    handler: function handler(event) {
+      console.log("asfdasf")
+      var confirmationMessage = "\o/";
+
+      e.returnValue = confirmationMessage;     // Gecko, Trident, Chrome 34+
+      return confirmationMessage;
+    }
   },
   computed: {
     cleaninStatus: function () {
