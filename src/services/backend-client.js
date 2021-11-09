@@ -2,6 +2,7 @@ import axios from "axios";
 
 class BackendClient {
     constructor (store) {
+        this.timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
         this.baseUrl = process.env.API_REST_URL;
         this.client = axios.create({
             baseURL: process.env.API_REST_URL || "http://localhost:3000",
@@ -20,6 +21,18 @@ class BackendClient {
             throw err;
             });
         });
+    }
+
+    getUploadPath() {
+        return this.baseUrl + "/interval/upload"
+    }
+
+    getTimeZone(){
+        return this.timeZone;
+    }
+
+    getToken() {
+        return this.client.defaults.headers.common['Authorization']
     }
 
     login(username, password) {
@@ -137,6 +150,14 @@ class BackendClient {
     createNewBooking(booking) {
         return new Promise((resolve, reject) => {
             this.client.post('/arrival', booking)
+                .then((response) => resolve(response.data))
+                .catch((error) => reject(error))
+        });
+    }
+
+    getCurrentIntervals(){
+        return new Promise((resolve, reject) => {
+            this.client.get('/interval')
                 .then((response) => resolve(response.data))
                 .catch((error) => reject(error))
         });

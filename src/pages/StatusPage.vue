@@ -1,14 +1,14 @@
 <template>
   <div class="wrapper">
     <div class="header"> ARRIVAL APARTMENTS LIST - STATUS -</div>
-    <div class="date">01/11/2021</div>
+    <div class="date">01/12/2021</div>
 
     <StatusList :apartmentList="apartmentsInfo" class="apartment_list" />
   </div>
 </template>
 
 <script>
-import { defineComponent } from "vue";
+import { defineComponent, ref, onMounted, inject } from "vue";
 import StatusList from "components/StatusList.vue";
 
 export default defineComponent({
@@ -16,15 +16,20 @@ export default defineComponent({
   components: {
     StatusList,
   },
-  data: function () {
+  setup() {
+    const serviceApi = inject('api')
+    const apartmentsInfo = ref([])
+    onMounted(() => {
+      serviceApi.getCurrentIntervals().then(response => {
+        console.log(JSON.stringify(response))
+        apartmentsInfo.value = response
+      })
+    })
     return {
-      apartmentsInfo: [
-        { id: 0, name: "name1", keys: 3, status: "clean", keysDelivered: 3 },
-        { id: 1, name: "name2", time: "11:40", keys: 3, status: "on_cleaning" },
-        { id: 2, name: "name3", time: "12:15", status: "dirty", keysDelivered: 3 },
-      ],
-    };
-  },
+      // 'OCCUPIED', 'READY_TO_CLEAN', 'ON_CLEANING', 'CLEAN'
+      apartmentsInfo
+    }
+  }
 });
 </script>
 

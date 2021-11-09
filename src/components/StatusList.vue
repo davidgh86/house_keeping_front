@@ -1,8 +1,11 @@
 <template>
   <div>
-    <div v-for="pair in appartmentPairs" :key="pair.index" class="flexContainer">
+    <!-- <div v-for="pair in appartmentPairs" :key="pair.index" class="flexContainer">
       <ApartmentStatus v-for="apartmentData in pair" :apartmentInfo="apartmentData" :key="apartmentData.id" class="flexItem"/>
-    </div>
+    </div> -->
+    
+    <ApartmentStatus v-for="apartmentData in apartmentList" :apartmentInfo="apartmentData" :key="apartmentData.id" />
+    
   </div>
 </template>
 

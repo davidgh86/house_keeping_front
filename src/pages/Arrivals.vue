@@ -1,67 +1,16 @@
 <template>
   <div class="wrapper">
-    <div class="header">HSK Admin</div>
+    <div class="header">HSK Admin</div>    
+      <q-uploader
+      :url="uploadUrl"
+      :headers="uploadHeaders"
+      :form-fields="formFields"
+      :multiple="multiple"
+      field-name="file"
+      @uploaded="onUploaded"
+      style="max-width: 300px"
 
-    <q-table
-      title="Arrivals"
-      :rows="rows"
-      :columns="columns"
-      v-model:pagination="pagination"
-      row-key="apartment._id"
-      :loading="loading"
-      @request="onRequest"
-    >
-      <template v-slot:body="props">
-        <q-tr :props="props">
-          <q-td auto-width>
-            <q-btn size="sm" color="primary" round dense @click="expandRow(props)" icon="edit"></q-btn>&nbsp;
-            <q-btn size="sm" color="primary" round dense @click="deleteArrival(props.key)" icon="delete"></q-btn>
-          </q-td>
-          <q-td
-            v-for="col in props.cols"
-            :key="col.name"
-            :props="props"
-          >
-            {{ col.value }}
-          </q-td>
-        </q-tr>
-        <q-tr v-show="props.expand" :props="props">
-          <q-td colspan="100%">
-            <div class="text-left">
-              <q-input v-model="props.row.email" label="Email"></q-input>
-              <q-input v-model="props.row.role" label="Role"></q-input>
-              <q-btn color="primary" label="OK" @click="confirmUpdate(props)"></q-btn>
-              <q-btn color="primary" label="Cancel" @click="cancelUpdate(props)"></q-btn>
-            </div>
-          </q-td>
-        </q-tr>
-      </template>
-    </q-table>
-    <div>Create new user</div>
-    <div>
-      <q-select filled v-model="newApartment" :options="apartments" label="Filled"></q-select>
-      <q-input type="number" v-model="newApartment.keys" label="Provided keys"></q-input>
-      <div>
-        <div class="q-gutter-md row items-start">
-          <div class="seletor-time-container">
-            <div>Pick time range</div>
-            <q-date v-model="dateRange" mask="YYYY-MM-DD HH:mm" range></q-date>
-          </div>
-          <div class="seletor-time-container">
-            <q-toggle v-model="newCheckInTimeNull" label="Specified check in Time" class="selector-time-toogle-container"></q-toggle>
-            <q-time v-model="dateRange.from" mask="YYYY-MM-DD HH:mm" v-if="!newCheckInTimeNull" class="selector-time-time-container"></q-time>
-          </div>
-          <div class="seletor-time-container">
-            <q-toggle v-model="newCheckOutTimeNull" label="Specified check out Time" class="selector-time-toogle-container"></q-toggle>
-            <q-time v-model="dateRange.to" mask="YYYY-MM-DD HH:mm" v-if="!newCheckOutTimeNull" class="selector-time-time-container"></q-time>
-          </div>
-        </div>
-      </div>
-      <q-btn color="primary" label="OK" @click="confirmCreate()"></q-btn>
-      <q-btn color="primary" label="Cancel" @click="cancelCreate()"></q-btn>
-    </div>
-    
-    
+    ></q-uploader>
   </div>
 </template>
 
@@ -69,275 +18,42 @@
 
 import { defineComponent, ref, onMounted, inject } from "vue";
 
-const columns = [
-  {
-    
-  },
-  {
-    name: 'apartment',
-    required: true,
-    label: 'Apartment name',
-    align: 'left',
-    field: 'apartment.apartmentName',
-  },
-  {
-    name: 'expectedKeys',
-    required: true,
-    label: 'Key provided',
-    align: 'left',
-    field: 'expectedKeys',
-  },
-  {
-    name: 'returnedKeys',
-    required: true,
-    label: 'Returned keys',
-    align: 'left',
-    field: 'returnedKeys',
-  },
-  {
-    name: 'checkInDate',
-    required: true,
-    label: 'Check in date',
-    align: 'left',
-    field: 'checkInDate',
-  },
-  {
-    name: 'checkInTimeNull',
-    required: true,
-    label: 'Arrival time confirmed',
-    align: 'left',
-    field: 'checkInTimeNull',
-  },
-  {
-    name: 'checkOutDate',
-    required: true,
-    label: 'Check out date',
-    align: 'left',
-    field: 'checkOutDate',
-  },
-  {
-    name: 'checkOutTimeNull',
-    required: true,
-    label: 'Departure time confirmed',
-    align: 'left',
-    field: 'checkOutTimeNull',
-  },
-  {
-    name: 'cleaningStatus',
-    required: true,
-    label: 'Cleaning Status',
-    align: 'left',
-    field: row => {
-      let arrayStatus = row.cleaningStatus
-      if (!arrayStatus || arrayStatus.length==0){
-        return "Not cleaning necessary"
-      } else {
-        return arrayStatus[arrayStatus.length - 1]
-      }
-    },
-  },
-  {
-    name: 'timeCleaned',
-    required: true,
-    label: 'Time cleaned',
-    align: 'left',
-    field: 'timeCleaned',
-  },
-  {
-    name: 'timeCleaned',
-    required: true,
-    label: 'Time cleaned',
-    align: 'left',
-    field: 'timeCleaned',
-  },
-  {
-    name: 'message',
-    required: true,
-    label: 'Message',
-    align: 'left',
-    field: 'message',
-  }
-]
-
-
-
 export default defineComponent({
   name: "Arrivals",
   setup () {
-    const apartments = ref([])
-    const newApartment = ref('')
-    const newExpectedKeys = ref('')
-    const dateRange = ref({ from: '', to: '' })
-    const newCheckInTimeNull = ref(false)
-    const newCheckOutTimeNull = ref(false)
-    const elementExpanded = ref(false)
-    const rows = ref([])
-    const loading = ref(false)
-    const pagination = ref({
-      page: 1,
-      rowsPerPage: 10
-    })
+    
     const serviceApi = inject('api')
+    const arrivals = ref([])
+    const departures = ref([])
+    const intervals = ref([])
 
-    function deleteArrival(username) {
-      serviceApi.removeUser(username).then((response) => {
-        rows.value = rows.value.filter(usr => usr.username !== username)
-      }).catch((error) => {
-        alert("Remove apartment failed")
-      })
+    function onUploaded(info) {
+      console.log(info)
+      console.log(info.xhr.response)
+      let response = JSON.parse(info.xhr.response)
+
+      arrivals.value = response.bookings.arrivals
+      departures.value = response.bookings.departures
+      intervals.value = response.intervals
     }
-
-    function expandRow(properties){
-      if (!elementExpanded.value){
-        editUserEmail.value = properties.row.email
-        editUserRole.value = properties.row.role
-        properties.expand = true
-        elementExpanded.value = true
-      } else {
-        properties.expand = false
-        elementExpanded.value = false
-      }
-    }
-
-    function updateUser(username, email, role){
-      return serviceApi.modifyUser(username, {
-        username: username,
-        email: email,
-        role: role
-      })
-    }
-
-    function confirmUpdate(properties) {
-      updateUser(properties.key, properties.row.email, properties.row.role).then(() => {
-      }).catch((error) => {
-        alert("Error updating")
-      }).finally(() => {
-        properties.expand = false
-        elementExpanded.value = false
-      })
-    }
-
-    function cancelUpdate(properties) {
-      properties.row.email = editUserEmail.value
-      properties.row.role = editUserRole.value
-      properties.expand = false
-      elementExpanded.value = false
-    }
-
-    function confirmCreate(){
-      let dateFrom = dateRange.value.from
-      if (newCheckInTimeNull.value) {
-        dateFrom = dateFrom.slice(0, -5) + "15:30"
-      }
-      dateFrom = Date.parse(dateFrom)
-
-      let dateTo = dateRange.value.to
-      if (newCheckOutTimeNull.value) {
-        dateTo = dateTo.slice(0, -5) + "10:30"
-      }
-      dateTo = Date.parse(dateTo)
-
-      serviceApi.createNewBooking({
-        apartment: newApartment.value.apartmentId,
-        expectedKeys: newApartment.value.keys,
-        checkInDate: dateFrom,
-        checkInTimeNull: newCheckInTimeNull.value,
-        checkOutDate: dateTo,
-        checkOutTimeNull: newCheckOutTimeNull.value
-      }).then((response) => {
-        // TODO loading
-        onRequest({
-          pagination: pagination.value
-        })
-      }).catch((error) => {
-        alert("Error creating Booking: "+ error.response.data.message)
-      })
-    }
-
-    function cancelCreate(){
-
-      newApartment.value = ''
-      newExpectedKeys.value = ''
-      dateRange.value = { from: '', to: '' }
-      newCheckInTimeNull.value = false
-      newCheckOutTimeNull.value = false
-    }
-
-    function onRequest (props) {
-
-      // const app = getCurrentInstance()
-      // const serviceApi = app.appContext.config.globalProperties.$api
-
-      const { page, rowsPerPage } = props.pagination
-
-      loading.value = true
-
-      let offset = (page - 1) * rowsPerPage
-      let limit = rowsPerPage
-
-      if (limit === 0){
-        limit = pagination.value.rowsNumber
-      }
-
-      serviceApi.getAllUsers(offset, limit).then(response => {
-        pagination.value.page = response.data.page
-        pagination.value.rowsPerPage = rowsPerPage
-        pagination.value.rowsNumber = response.data.totalDocs
-
-        let returnedData = response.data.docs
-        rows.value.splice(0, rows.value.length, ...returnedData)
-        //rows.value = response.data.docs
-
-        loading.value = false
-      }).catch((error) => {
-        alert(error)
-        loading.value = false
-      });
-    }
-
-    onMounted(() => {
-      // get initial data from server (1st page)
-      onRequest({
-        pagination: pagination.value
-      })
-      
-      serviceApi.getAllApartments().then(response => {
-        apartments.value = response.map(item => {
-          return {
-            label: item.apartmentName,
-            apartmentId: item._id,
-            keys: item.keys
-          }
-        })
-      }).catch(error => {
-        alert("Error retrieving apartments")
-      })
-    })
 
     return {
-      loading,
-      pagination,
-      columns,
-      rows,
-
-      apartments,
-
-      newApartment,
-      dateRange,
-      newExpectedKeys,
-      newCheckInTimeNull,
-      newCheckOutTimeNull,
-
-      onRequest,
-      deleteArrival,
-      expandRow,
-      confirmUpdate,
-      cancelUpdate,
-
-      confirmCreate,
-      cancelCreate
+      uploadUrl: serviceApi.getUploadPath(),
+      uploadHeaders: [
+        {name: 'Authorization', value: serviceApi.getToken()},
+        {name: 'Time-Zone', value: serviceApi.getTimeZone()},
+      ],
+      formFields: [
+        {name: 'date', value: 1635361769000}
+      ],
+      multiple:false,
+      onUploaded: onUploaded,
+      arrivals,
+      departures,
+      intervals
     }
   }
+  
 });
 
 
