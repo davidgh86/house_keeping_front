@@ -7,6 +7,7 @@ class BackendClient {
         this.client = axios.create({
             baseURL: process.env.API_REST_URL || "http://localhost:3000",
         });
+        this.wsHost = process.env.API_WS_URL || "ws://localhost:3000"
 
         const token = localStorage.getItem('token')
         if (token) {
@@ -21,6 +22,10 @@ class BackendClient {
             throw err;
             });
         });
+    }
+
+    getWsPath() {
+        return this.wsHost;
     }
 
     getUploadPath() {

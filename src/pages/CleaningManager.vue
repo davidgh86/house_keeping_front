@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import { defineComponent } from "vue";
+import { defineComponent, onMounted, ref, inject } from "vue";
 import EditableApartmentInfo from "src/components/EditableApartmentStatus.vue";
 
 export default defineComponent({
@@ -15,15 +15,29 @@ export default defineComponent({
   components: {
     EditableApartmentInfo,
   },
-  data: function () {
+  setup() {
+    const serviceApi = inject('api')
+    const apartmentList = ref([])
+
+    onMounted(() => {
+      serviceApi.getCurrentIntervals().then(response => {
+        apartmentList.value = response
+      })
+    })
     return {
-      apartmentList: [
-        { id: 0, name: "name1", keys: 3, status: "clean", keysDelivered: 3 },
-        { id: 1, name: "name2", time: "11:40", keys: 3, status: "on_cleaning" },
-        { id: 2, name: "name3", time: "12:15", status: "dirty", keysDelivered: 3 },
-      ],
-    };
-  },
+      apartmentList
+    }
+
+  }
+  // data: function () {
+  //   return {
+  //     apartmentList: [
+  //       { id: 0, name: "name1", keys: 3, status: "clean", keysDelivered: 3 },
+  //       { id: 1, name: "name2", time: "11:40", keys: 3, status: "on_cleaning" },
+  //       { id: 2, name: "name3", time: "12:15", status: "dirty", keysDelivered: 3 },
+  //     ],
+  //   };
+  // },
 });
 </script>
 

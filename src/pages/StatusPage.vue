@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import { defineComponent, ref, onMounted, inject } from "vue";
+import { defineComponent, ref, onMounted, inject, onBeforeUnmount } from "vue";
 import StatusList from "components/StatusList.vue";
 
 export default defineComponent({
@@ -19,12 +19,29 @@ export default defineComponent({
   setup() {
     const serviceApi = inject('api')
     const apartmentsInfo = ref([])
+    let ws = null
+
     onMounted(() => {
       serviceApi.getCurrentIntervals().then(response => {
-        console.log(JSON.stringify(response))
         apartmentsInfo.value = response
       })
+      ws = new WebSocket(serviceApi.getWsPath())
+      ws.onopen = function (event) {
+        // TODO check if working
+        console.log("Connected to ws")
+      }
+      ws.onmessage = function (event) {
+        // TODO check if working
+        console.log(event.data)
+      }
     })
+
+    onBeforeUnmount(() => {
+      if (ws){
+        ws.close();
+      }
+    })
+
     return {
       // 'OCCUPIED', 'READY_TO_CLEAN', 'ON_CLEANING', 'CLEAN'
       apartmentsInfo

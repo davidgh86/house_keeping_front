@@ -35,6 +35,20 @@ export default defineComponent({
       }
     })
 
+    const deliveredKeysStatus = computed(() => {
+      if (!props.apartmentInfo.keys){
+        return ""
+      }
+      if (!props.apartmentInfo.keysDelivered){
+        return "status_ready_to_clean"
+      }
+      if (props.apartmentInfo.keysDelivered !== props.apartmentInfo.keys) {
+        return "status_ready_to_clean"
+      } else {
+        return "status_clean"
+      }
+    })
+
     const getTime = computed(() => {
       let time = props.apartmentInfo.limitTime
       if (!time){
@@ -43,20 +57,6 @@ export default defineComponent({
       let date = new Date(time)
       return date.getHours().toString().padStart(2, '0') + ":" + date.getMinutes().toString().padStart(2, '0')
     });
-    
-    const deliveredKeysStatus = computed(() => {
-      if (!props.apartmentInfo.keys){
-        return ""
-      }
-      if (!props.apartmentInfo.keysDelivered){
-        return "status_ready_to_clean"
-      }
-      if (props.apartmentInfo.keysDelivered !== this.apartmentInfo.keys) {
-        return "status_ready_to_clean"
-      } else {
-        return "status_clean"
-      }
-    })
 
     return {
       cleaninStatus,
