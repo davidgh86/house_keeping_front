@@ -20,7 +20,7 @@
         ></q-btn>
     </div>
     <div class="send-container" v-show="showMessageBox">
-        <textarea class="message-container"></textarea>
+        <textarea class="message-container" v-model="messageText"></textarea>
         <q-btn
           class="send-button-container"
           color="primary"
@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import { defineComponent, computed } from 'vue'
+import { defineComponent, computed, inject } from 'vue'
 
 export default defineComponent({
   name: 'EditableApartmentStatus',
@@ -50,9 +50,11 @@ export default defineComponent({
       deliveredKeys: 0,
       showMessageBox: false,
       interval: null,
+      messageText: ''
     }
   },
   setup(){
+    const serviceApi = inject('api')
     return {
       changeStatus: function (){
         if (!this.apartmentInfoData || !this.apartmentInfoData.cleaningStatus || !this.apartmentInfoData.cleaningStatus.cleaningStatus) {
@@ -72,7 +74,19 @@ export default defineComponent({
         this.sendUpdateWithTimeout()
       },
       sendUpdate: function(){
-        alert("apartment info data " + JSON.stringify(this.apartmentInfoData.cleaningStatus.cleaningStatus) + " deliveredKeys " + this.deliveredKeys)
+        serviceApi.updateInterval({
+          apartmentCode: this.apartmentInfoData.apartmentCode,
+          bookingCode: this.apartmentInfoData.bookingCode,
+          cleaningStatus: this.apartmentInfoData.cleaningStatus,
+          returnedKeys: this.deliveredKeys
+        })
+        .then((updatedInterval) => {
+          this.apartmentInfoData = updatedInterval
+        })
+        .catch((error) => {
+          alert(JSON.stringify(error))
+        })
+        
         this.interval = null;
       },
       sendUpdateWithTimeout: function(){
@@ -95,8 +109,7 @@ export default defineComponent({
         this.showMessageBox = !this.showMessageBox
       },
       sendMessage: function(){
-        alert("send message")
-        this.sendUpdateWithTimeout()
+        alert("send message: " + this.messageText)
       },
       sendOnDestory: function(){
         if (this.interval){
@@ -107,29 +120,13 @@ export default defineComponent({
     }
   },
   created() {
-    window.addEventListener("beforeunload", function (e) {
-    console.log("aaa1")
-  var confirmationMessage = "\o/";
-
-  //event.preventDefault();
-  
-  console.log("aaa2")
-  e.returnValue = confirmationMessage; 
-  console.log("aaa3")    // Gecko, Trident, Chrome 34+
-  return confirmationMessage;              // Gecko, WebKit, Chrome <34
-});
+    window.addEventListener("beforeunload", (e) => {
+      var confirmationMessage = "\o/";  
+      this.sendOnDestory()
+      e.returnValue = confirmationMessage;     // Gecko, Trident, Chrome 34+
+      return confirmationMessage;              // Gecko, WebKit, Chrome <34
+    });
   },
-  // mounted() {
-  // },
-  // beforeMount() {
-  //   //window.addEventListener("beforeunload", this.sendOnDestory())
-  // },
-  // unmounted() {
-  //     alert("beforeDestroy")
-  // },
-  // beforeUnmount(){
-  //   this.sendOnDestory()
-  // },
   methods: {
     handler: function handler(event) {
       console.log("asfdasf")

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { reject } from "core-js/fn/promise";
 
 class BackendClient {
     constructor (store) {
@@ -166,6 +167,14 @@ class BackendClient {
                 .then((response) => resolve(response.data))
                 .catch((error) => reject(error))
         });
+    }
+
+    updateInterval(interval){
+        return new Promise((resolve, reject) => {
+            this.client.put('/interval')
+                .then(response => resolve(response.data))
+                .catch((error) => reject(error))
+        })
     }
 }
 
