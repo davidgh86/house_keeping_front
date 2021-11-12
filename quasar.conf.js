@@ -48,7 +48,7 @@ module.exports = configure(function (ctx) {
     build: {
       vueRouterMode: 'hash', // available values: 'hash', 'history'
 
-      //build: { devtool: 'source-map' },
+      build: { devtool: 'source-map' },
       // transpile: false,
 
       // Add dependencies for transpiling with Babel (Array of string/regex)

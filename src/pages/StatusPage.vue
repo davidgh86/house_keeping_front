@@ -21,6 +21,15 @@ export default defineComponent({
     const apartmentsInfo = ref([])
     let ws = null
 
+    const updateStatus = function(apartmentInfo) {
+      alert(JSON.stringify(apartmentInfo))
+      for (var i = 0; i < apartmentsInfo.value.length; i++){
+        if (apartmentsInfo.value[i].apartmentCode === apartmentInfo.apartmentCode){
+          apartmentsInfo.value[i] = apartmentsInfo
+        }
+      }
+    } 
+
     onMounted(() => {
       serviceApi.getCurrentIntervals().then(response => {
         apartmentsInfo.value = response
@@ -32,7 +41,8 @@ export default defineComponent({
       }
       ws.onmessage = function (event) {
         // TODO check if working
-        console.log(event.data)
+        updateStatus(event.data)
+        console.log("--> " + event.data)
       }
     })
 
