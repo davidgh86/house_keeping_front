@@ -25,20 +25,12 @@ export default defineComponent({
         apartmentList.value = response
       })
     })
+
     return {
       apartmentList
     }
-
+    
   }
-  // data: function () {
-  //   return {
-  //     apartmentList: [
-  //       { id: 0, name: "name1", keys: 3, status: "clean", keysDelivered: 3 },
-  //       { id: 1, name: "name2", time: "11:40", keys: 3, status: "on_cleaning" },
-  //       { id: 2, name: "name3", time: "12:15", status: "dirty", keysDelivered: 3 },
-  //     ],
-  //   };
-  // },
 });
 </script>
 

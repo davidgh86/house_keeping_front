@@ -22,9 +22,11 @@ export default defineComponent({
     let ws = null
 
     const updateStatus = function(apartmentInfo) {
+      let aptInf = JSON.parse(apartmentInfo)
       for (var i = 0; i < apartmentsInfo.value.length; i++){
-        if (apartmentsInfo.value[i].apartmentCode === apartmentInfo.apartmentCode){
-          apartmentsInfo.value[i] = apartmentsInfo
+        if (apartmentsInfo.value[i].apartmentCode === aptInf.apartmentCode){
+          apartmentsInfo.value[i] = aptInf
+          break;
         }
       }
     } 
@@ -35,13 +37,10 @@ export default defineComponent({
       })
       ws = new WebSocket(serviceApi.getWsPath())
       ws.onopen = function (event) {
-        // TODO check if working
         console.log("Connected to ws")
       }
       ws.onmessage = function (event) {
-        // TODO check if working
         updateStatus(event.data)
-        console.log("--> " + event.data)
       }
     })
 
@@ -51,8 +50,18 @@ export default defineComponent({
       }
     })
 
+    created(() => {
+    window.addEventListener("beforeunload", (e) => {
+      var confirmationMessage = "\o/";  
+      if (ws){
+        ws.close();
+      }
+      e.returnValue = confirmationMessage;     // Gecko, Trident, Chrome 34+
+      return confirmationMessage;              // Gecko, WebKit, Chrome <34
+      });
+    });
+
     return {
-      // 'OCCUPIED', 'READY_TO_CLEAN', 'ON_CLEANING', 'CLEAN'
       apartmentsInfo
     }
   }
