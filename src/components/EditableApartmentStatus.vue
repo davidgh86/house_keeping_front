@@ -58,7 +58,7 @@ export default defineComponent({
     return {
       changeStatus: function (){
         if (!this.apartmentInfoData || !this.apartmentInfoData.cleaningStatus || !this.apartmentInfoData.cleaningStatus.cleaningStatus) {
-          return ""
+          this.apartmentInfoData.cleaningStatus.cleaningStatus = "OCCUPIED"
         }
         if (this.apartmentInfoData.cleaningStatus.cleaningStatus === "OCCUPIED") {
           this.apartmentInfoData.cleaningStatus.cleaningStatus = "READY_TO_CLEAN"
@@ -67,7 +67,7 @@ export default defineComponent({
         } else if (this.apartmentInfoData.cleaningStatus.cleaningStatus === "ON_CLEANING"){
           this.apartmentInfoData.cleaningStatus.cleaningStatus = "CLEAN"
         } else if (this.apartmentInfoData.cleaningStatus.cleaningStatus === "CLEAN") {
-          this.apartmentInfoData.cleaningStatus.cleaningStatus = "READY_TO_CLEAN"
+          this.apartmentInfoData.cleaningStatus.cleaningStatus = "OCCUPIED"
         }else {
           this.apartmentInfoData.cleaningStatus.cleaningStatus = "READY_TO_CLEAN"
         }
@@ -129,7 +129,6 @@ export default defineComponent({
   },
   methods: {
     handler: function handler(event) {
-      console.log("asfdasf")
       var confirmationMessage = "\o/";
 
       e.returnValue = confirmationMessage;     // Gecko, Trident, Chrome 34+

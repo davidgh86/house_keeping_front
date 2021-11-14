@@ -23,18 +23,11 @@ export default defineComponent({
   setup () {
     
     const serviceApi = inject('api')
-    const arrivals = ref([])
-    const departures = ref([])
-    const intervals = ref([])
 
     function onUploaded(info) {
       console.log(info)
       console.log(info.xhr.response)
       let response = JSON.parse(info.xhr.response)
-
-      arrivals.value = response.bookings.arrivals
-      departures.value = response.bookings.departures
-      intervals.value = response.intervals
     }
 
     return {
@@ -47,10 +40,7 @@ export default defineComponent({
         {name: 'date', value: 1635361769000}
       ],
       multiple:false,
-      onUploaded: onUploaded,
-      arrivals,
-      departures,
-      intervals
+      onUploaded: onUploaded
     }
   }
   

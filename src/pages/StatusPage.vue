@@ -22,7 +22,6 @@ export default defineComponent({
     let ws = null
 
     const updateStatus = function(apartmentInfo) {
-      alert(JSON.stringify(apartmentInfo))
       for (var i = 0; i < apartmentsInfo.value.length; i++){
         if (apartmentsInfo.value[i].apartmentCode === apartmentInfo.apartmentCode){
           apartmentsInfo.value[i] = apartmentsInfo
@@ -31,7 +30,7 @@ export default defineComponent({
     } 
 
     onMounted(() => {
-      serviceApi.getCurrentIntervals().then(response => {
+      serviceApi.getCurrentIntervals(1635361769000).then(response => {
         apartmentsInfo.value = response
       })
       ws = new WebSocket(serviceApi.getWsPath())

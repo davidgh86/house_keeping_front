@@ -20,7 +20,8 @@ export default defineComponent({
     const apartmentList = ref([])
 
     onMounted(() => {
-      serviceApi.getCurrentIntervals().then(response => {
+      // TODO add date
+      serviceApi.getCurrentIntervals(1635361769000).then(response => {
         apartmentList.value = response
       })
     })

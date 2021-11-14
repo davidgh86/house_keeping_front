@@ -13,6 +13,7 @@ class BackendClient {
         if (token) {
             this.client.defaults.headers.common['Authorization'] = "Bearer " + token
         }
+        this.client.defaults.headers.common['Time-Zone'] = this.timeZone;
 
         this.client.interceptors.response.use(undefined, function (err) {
             return new Promise(function (resolve, reject) {
@@ -29,7 +30,7 @@ class BackendClient {
     }
 
     getUploadPath() {
-        return this.baseUrl + "/interval/upload"
+        return this.baseUrl + "/superControlRouter/upload"
     }
 
     getTimeZone(){
@@ -160,9 +161,9 @@ class BackendClient {
         });
     }
 
-    getCurrentIntervals(){
+    getCurrentIntervals(epochDate){
         return new Promise((resolve, reject) => {
-            this.client.get('/interval')
+            this.client.get('/interval/'+epochDate)
                 .then((response) => resolve(response.data))
                 .catch((error) => reject(error))
         });
