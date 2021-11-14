@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import { defineComponent, computed, inject } from 'vue'
+import { defineComponent, computed, inject, ref } from 'vue'
 
 export default defineComponent({
   name: 'EditableApartmentStatus',
@@ -44,131 +44,150 @@ export default defineComponent({
       required: true
     }
   },
-  data() {
-    return {
-      apartmentInfoData: this.apartmentInfo,
-      deliveredKeys: 0,
-      showMessageBox: false,
-      interval: null,
-      messageText: ''
-    }
-  },
-  setup(){
+  setup(props){
     const serviceApi = inject('api')
-    return {
-      changeStatus: function (){
-        if (!this.apartmentInfoData || !this.apartmentInfoData.cleaningStatus || !this.apartmentInfoData.cleaningStatus.cleaningStatus) {
-          this.apartmentInfoData.cleaningStatus.cleaningStatus = "OCCUPIED"
-        }
-        if (this.apartmentInfoData.cleaningStatus.cleaningStatus === "OCCUPIED") {
-          this.apartmentInfoData.cleaningStatus.cleaningStatus = "READY_TO_CLEAN"
-        } else if (this.apartmentInfoData.cleaningStatus.cleaningStatus === "READY_TO_CLEAN") {
-          this.apartmentInfoData.cleaningStatus.cleaningStatus = "ON_CLEANING"
-        } else if (this.apartmentInfoData.cleaningStatus.cleaningStatus === "ON_CLEANING"){
-          this.apartmentInfoData.cleaningStatus.cleaningStatus = "CLEAN"
-        } else if (this.apartmentInfoData.cleaningStatus.cleaningStatus === "CLEAN") {
-          this.apartmentInfoData.cleaningStatus.cleaningStatus = "OCCUPIED"
-        }else {
-          this.apartmentInfoData.cleaningStatus.cleaningStatus = "READY_TO_CLEAN"
-        }
-        this.sendUpdateWithTimeout()
-      },
-      sendUpdate: function(){
-        serviceApi.updateInterval({
-          apartmentCode: this.apartmentInfoData.apartmentCode,
-          bookingCode: this.apartmentInfoData.bookingCode,
-          cleaningStatus: this.apartmentInfoData.cleaningStatus,
-          returnedKeys: this.deliveredKeys
+
+    const apartmentInfoData = ref(props.apartmentInfo)
+    const deliveredKeys = ref(0)
+    const showMessageBox = ref(false)
+    var interval = null
+    const messageText = ref('')
+
+    // if (!window.apartmensUpdateInterval) {
+    //   window["interval_apartement_"+props.apartmentInfo.apartmentCode] = {}
+    // }
+
+    const sendUpdate = async function(){
+      try {
+        let updatedInterval = await serviceApi.updateInterval({
+          apartmentCode: apartmentInfoData.value.apartmentCode,
+          bookingCode: apartmentInfoData.value.bookingCode,
+          cleaningStatus: apartmentInfoData.value.cleaningStatus,
+          returnedKeys: deliveredKeys.value
         })
-        .then((updatedInterval) => {
-          this.apartmentInfoData = updatedInterval
-        })
-        .catch((error) => {
-          alert(JSON.stringify(error))
-        })
-        
-        this.interval = null;
-      },
-      sendUpdateWithTimeout: function(){
-        if (this.interval){
-          clearTimeout(this.interval)
-        }
-        this.interval = setTimeout(() => {
-          this.sendUpdate()
-        }, 4000)
-      },
-      addKey: function (){
-        this.deliveredKeys++;
-        this.sendUpdateWithTimeout()
-      },
-      restoreKey: function() {
-        this.deliveredKeys = 0;
-        this.sendUpdateWithTimeout()
-      },
-      swithMessageBox: function() {
-        this.showMessageBox = !this.showMessageBox
-      },
-      sendMessage: function(){
-        alert("send message: " + this.messageText)
-      },
-      sendOnDestory: function(){
-        if (this.interval){
-          clearTimeout(this.interval)
-          this.sendUpdate()
-        }
+        apartmentInfoData.value = updatedInterval
+      }catch(error) {
+        alert(JSON.stringify(error))
+      }
+      
+      interval = null;
+    }
+
+    const sendOnDestory = async function() {
+      if (interval){
+        clearTimeout(interval)
+        await sendUpdate()
       }
     }
-  },
-  created() {
-    window.addEventListener("beforeunload", (e) => {
-      var confirmationMessage = "\o/";  
-      this.sendOnDestory()
-      e.returnValue = confirmationMessage;     // Gecko, Trident, Chrome 34+
-      return confirmationMessage;              // Gecko, WebKit, Chrome <34
-    });
-  },
-  methods: {
-    handler: function handler(event) {
-      var confirmationMessage = "\o/";
 
-      e.returnValue = confirmationMessage;     // Gecko, Trident, Chrome 34+
-      return confirmationMessage;
+    window.addEventListener("beforeunload", async (e) => {
+      await sendOnDestory()
+      return null;
+    });
+
+    function changeStatus (){
+      if (!apartmentInfoData.value || !apartmentInfoData.value.cleaningStatus || !apartmentInfoData.value.cleaningStatus.cleaningStatus) {
+        apartmentInfoData.value.cleaningStatus.cleaningStatus = "OCCUPIED"
+        sendUpdateWithTimeout()
+        return;
+      }
+      if (apartmentInfoData.value.cleaningStatus.cleaningStatus === "OCCUPIED") {
+        apartmentInfoData.value.cleaningStatus.cleaningStatus = "READY_TO_CLEAN"
+      } else if (apartmentInfoData.value.cleaningStatus.cleaningStatus === "READY_TO_CLEAN") {
+        apartmentInfoData.value.cleaningStatus.cleaningStatus = "ON_CLEANING"
+      } else if (apartmentInfoData.value.cleaningStatus.cleaningStatus === "ON_CLEANING"){
+        apartmentInfoData.value.cleaningStatus.cleaningStatus = "CLEAN"
+      } else if (apartmentInfoData.value.cleaningStatus.cleaningStatus === "CLEAN") {
+        apartmentInfoData.value.cleaningStatus.cleaningStatus = "OCCUPIED"
+      }else {
+        apartmentInfoData.value.cleaningStatus.cleaningStatus = "READY_TO_CLEAN"
+      }
+      sendUpdateWithTimeout()
+    };
+
+    function sendUpdateWithTimeout(){
+      if (interval){
+        clearTimeout(interval)
+      }
+      interval = setTimeout(() => {
+        sendUpdate()
+      }, 40000)
+    };
+
+    function addKey(){
+      deliveredKeys.value = deliveredKeys.value + 1;
+      sendUpdateWithTimeout()
     }
-  },
-  computed: {
-    cleaninStatus: function () {
-      if (!this.apartmentInfoData || !this.apartmentInfoData.cleaningStatus || !this.apartmentInfoData.cleaningStatus.cleaningStatus) {
+
+    function restoreKey(){
+      deliveredKeys.value = 0;
+      sendUpdateWithTimeout()
+    }
+    
+    function swithMessageBox() {
+      showMessageBox.value = !showMessageBox.value
+    }
+
+    function sendMessage(){
+      alert("send message: " + messageText.value)
+    }
+
+    
+
+    const cleaninStatus = computed(() => {
+      if (!apartmentInfoData.value || !apartmentInfoData.value.cleaningStatus || !apartmentInfoData.value.cleaningStatus.cleaningStatus) {
         return ""
       }
-      if (this.apartmentInfoData.cleaningStatus.cleaningStatus === "OCCUPIED") {
+      if (apartmentInfoData.value.cleaningStatus.cleaningStatus === "OCCUPIED") {
         return "status_occupied"
-      } else if (this.apartmentInfoData.cleaningStatus.cleaningStatus === "READY_TO_CLEAN") {
+      } else if (apartmentInfoData.value.cleaningStatus.cleaningStatus === "READY_TO_CLEAN") {
         return "status_dirty";
-      } else if (this.apartmentInfoData.cleaningStatus.cleaningStatus === "ON_CLEANING"){
+      } else if (apartmentInfoData.value.cleaningStatus.cleaningStatus === "ON_CLEANING"){
         return "status_on_cleaning";
-      } else if (this.apartmentInfoData.cleaningStatus.cleaningStatus === "CLEAN") {
+      } else if (apartmentInfoData.value.cleaningStatus.cleaningStatus === "CLEAN") {
         return "status_clean"
       }else{
         return ""
       }
-    },
-    deliveredKeysStatus: function () {
-      if (!this.apartmentInfoData.keys){
+    })
+
+    const deliveredKeysStatus = computed(() => {
+      if (!apartmentInfoData.value.keys){
         return ""
       }
-      if (this.apartmentInfoData.keys !== this.keysDelivered) {
+      if (apartmentInfoData.value.keys !== keysDelivered.value) {
         return "status_dirty"
       } else {
         return "status_clean"
       }
-    },
-    getTime: function(){
-      let time = this.apartmentInfoData.limitTime
+    })
+
+    const getTime = computed(() => {
+      let time = apartmentInfoData.value.limitTime
       if (!time){
         return "Not today"
       }
       let date = new Date(time)
       return date.getHours().toString().padStart(2, '0') + ":" + date.getMinutes().toString().padStart(2, '0')
+    })
+
+    return {
+
+      changeStatus,
+      addKey,
+      restoreKey,
+      swithMessageBox,
+      sendMessage,
+      sendOnDestory,
+
+      apartmentInfoData,
+      deliveredKeys,
+      showMessageBox,
+      messageText,
+
+      cleaninStatus,
+      deliveredKeysStatus,
+      getTime
     }
   }
 })

@@ -31,6 +31,13 @@ export default defineComponent({
       }
     } 
 
+    window.addEventListener("beforeunload", (e) => {
+      if (ws){
+        ws.close();
+      }
+      return null;
+    });
+
     onMounted(() => {
       serviceApi.getCurrentIntervals(1635361769000).then(response => {
         apartmentsInfo.value = response
@@ -49,17 +56,6 @@ export default defineComponent({
         ws.close();
       }
     })
-
-    created(() => {
-    window.addEventListener("beforeunload", (e) => {
-      var confirmationMessage = "\o/";  
-      if (ws){
-        ws.close();
-      }
-      e.returnValue = confirmationMessage;     // Gecko, Trident, Chrome 34+
-      return confirmationMessage;              // Gecko, WebKit, Chrome <34
-      });
-    });
 
     return {
       apartmentsInfo
