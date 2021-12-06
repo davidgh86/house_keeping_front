@@ -48,7 +48,7 @@ export default defineComponent({
     const serviceApi = inject('api')
 
     const apartmentInfoData = ref(props.apartmentInfo)
-    const deliveredKeys = ref(0)
+    const deliveredKeys = ref(props.apartmentInfo.returnedKeys)
     const showMessageBox = ref(false)
     var interval = null
     const messageText = ref('')
@@ -86,8 +86,8 @@ export default defineComponent({
     });
 
     function changeStatus (){
-      if (!apartmentInfoData.value || !apartmentInfoData.value.cleaningStatus || !apartmentInfoData.value.cleaningStatus.cleaningStatus) {
-        apartmentInfoData.value.cleaningStatus.cleaningStatus = "OCCUPIED"
+      if (!apartmentInfoData.value.cleaningStatus || !apartmentInfoData.value.cleaningStatus.cleaningStatus) {
+        apartmentInfoData.value.cleaningStatus = {cleaningStatus:  "OCCUPIED"}
         sendUpdateWithTimeout()
         return;
       }
@@ -111,16 +111,20 @@ export default defineComponent({
       }
       interval = setTimeout(() => {
         sendUpdate()
-      }, 40000)
+      }, 4000)
     };
 
     function addKey(){
-      deliveredKeys.value = deliveredKeys.value + 1;
+      if (deliveredKeys.value || deliveredKeys.value === 0 ){
+        deliveredKeys.value = deliveredKeys.value + 1;
+      } else {
+        deliveredKeys.value = 0;
+      }
       sendUpdateWithTimeout()
     }
 
     function restoreKey(){
-      deliveredKeys.value = 0;
+      deliveredKeys.value = null;
       sendUpdateWithTimeout()
     }
     
@@ -131,8 +135,6 @@ export default defineComponent({
     function sendMessage(){
       alert("send message: " + messageText.value)
     }
-
-    
 
     const cleaninStatus = computed(() => {
       if (!apartmentInfoData.value || !apartmentInfoData.value.cleaningStatus || !apartmentInfoData.value.cleaningStatus.cleaningStatus) {

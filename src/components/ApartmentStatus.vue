@@ -2,7 +2,7 @@
   <div class="wrapper">
     <div class="name apartment_radius" :class="[cleaninStatus]">{{ apartmentInfo.apartmentName }}</div>
     <div class="time">{{ getTime }}</div>
-    <div class="keys apartment_radius" :class="[deliveredKeysStatus]">{{ apartmentInfo.expectedKeys }}</div>
+    <div class="keys apartment_radius" :class="[deliveredKeysStatus]">{{ apartmentInfo.returnedKeys }}/{{ apartmentInfo.expectedKeys }}</div>
   </div>
 </template>
 
