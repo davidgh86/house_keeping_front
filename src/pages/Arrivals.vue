@@ -37,7 +37,7 @@ export default defineComponent({
         {name: 'Time-Zone', value: serviceApi.getTimeZone()},
       ],
       formFields: [
-        {name: 'date', value: 1635361769000}
+        {name: 'date', value: Date.now()}
       ],
       multiple:false,
       onUploaded: onUploaded

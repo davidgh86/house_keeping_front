@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <div class="header">ARRIVAL APARTMENTS LIST<br>EDIT</div>
-    <div class="date">01/11/2021</div>
+    <div class="date"> {{ currentDate }}</div>
     <EditableApartmentInfo :apartmentInfo="apartment" v-for="apartment in apartmentList" :key="apartment.id"/>    
   </div>
 </template>
@@ -19,15 +19,18 @@ export default defineComponent({
     const serviceApi = inject('api')
     const apartmentList = ref([])
 
+    const currentDate = ref(new Date(Date.now()))
+
     onMounted(() => {
       // TODO add date
-      serviceApi.getCurrentIntervals(1635361769000).then(response => {
+      serviceApi.getCurrentIntervals(Date.now()).then(response => {
         apartmentList.value = response
       })
     })
 
     return {
-      apartmentList
+      apartmentList,
+      currentDate
     }
     
   }

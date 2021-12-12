@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <div class="header"> ARRIVAL APARTMENTS LIST - STATUS -</div>
-    <div class="date">01/12/2021</div>
+    <div class="date">{{ currentDate }}</div>
 
     <StatusList :apartmentList="apartmentsInfo" class="apartment_list" />
   </div>
@@ -19,6 +19,7 @@ export default defineComponent({
   setup() {
     const serviceApi = inject('api')
     const apartmentsInfo = ref([])
+    const currentDate = ref(new Date(Date.now()))
     let ws = null
 
     const updateStatus = function(apartmentInfo) {
@@ -39,7 +40,7 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      serviceApi.getCurrentIntervals(1635361769000).then(response => {
+      serviceApi.getCurrentIntervals(Date.now()).then(response => {
         apartmentsInfo.value = response
       })
       ws = new WebSocket(serviceApi.getWsPath())
@@ -58,7 +59,8 @@ export default defineComponent({
     })
 
     return {
-      apartmentsInfo
+      apartmentsInfo,
+      currentDate
     }
   }
 });
