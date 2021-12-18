@@ -80,9 +80,19 @@ export default defineComponent({
       }
     }
 
-    window.addEventListener("beforeunload", async (e) => {
-      await sendOnDestory()
-      return null;
+    // window.addEventListener("beforeunload", async (e) => {
+    //   await sendOnDestory()
+    //   return null;
+    // });
+
+    window.addEventListener('beforeunload', (event) => {
+      // Cancel the event as stated by the standard.
+      
+      if (interval) {
+        event.preventDefault();
+        event.returnValue = "updating Values. wait 3 seconds";
+        return "updating Values. wait 3 seconds";
+      }
     });
 
     function changeStatus (){
