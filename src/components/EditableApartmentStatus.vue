@@ -143,7 +143,9 @@ export default defineComponent({
     }
 
     function sendMessage(){
-      alert("send message: " + messageText.value)
+      serviceApi.sendMessage(apartmentInfoData.value.apartmentCode, messageText.value).then(() => {
+        alert("Message successfully sent")
+      }).catch(error => alert("Error sending message"))
     }
 
     const cleaninStatus = computed(() => {

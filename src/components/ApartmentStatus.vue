@@ -1,8 +1,13 @@
 <template>
-  <div class="wrapper">
-    <div class="name apartment_radius" :class="[cleaninStatus]">{{ apartmentInfo.apartmentName }}</div>
-    <div class="time">{{ getTime }}</div>
-    <div class="keys apartment_radius" :class="[deliveredKeysStatus]">{{ apartmentInfo.returnedKeys }}/{{ apartmentInfo.expectedKeys }}</div>
+  <div>
+    <div class="wrapper">
+      <div class="name apartment_radius" :class="[cleaninStatus]">{{ apartmentInfo.apartmentName }}</div>
+      <div class="time">{{ getTime }}</div>
+      <div class="keys apartment_radius" :class="[deliveredKeysStatus]">{{ apartmentInfo.returnedKeys }}/{{ apartmentInfo.expectedKeys }}</div>
+    </div>
+    <div v-for="(msg, index) in messages" :key="index" style="font-size: 1rem; background-color: #ABBAEA; border: 0.2rem solid red; border-radius: 0.8rem">
+      {{ msg }}
+    </div>
   </div>
 </template>
 
@@ -49,6 +54,14 @@ export default defineComponent({
       }
     })
 
+    const messages = computed(() => {
+      if (!props.apartmentInfo.messages){
+        return []
+      }else {
+        return props.apartmentInfo.messages
+      }
+    })
+
     const getTime = computed(() => {
       let time = props.apartmentInfo.limitTime
       if (!time){
@@ -61,7 +74,8 @@ export default defineComponent({
     return {
       cleaninStatus,
       deliveredKeysStatus,
-      getTime
+      getTime,
+      messages
     }
   }
 })

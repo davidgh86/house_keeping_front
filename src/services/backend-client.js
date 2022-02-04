@@ -176,6 +176,14 @@ class BackendClient {
                 .catch((error) => reject(error))
         });
     }
+
+    sendMessage(apartmentCode, message) {
+        return new Promise((resolve, reject) => {
+            this.client.put('/interval/message/'+apartmentCode, {message})
+                .then(response => resolve(response.data))
+                .catch((error) => reject(error))
+        });
+    }
 }
 
 export default BackendClient
