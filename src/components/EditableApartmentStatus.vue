@@ -144,7 +144,7 @@ export default defineComponent({
 
     function sendMessage(){
       serviceApi.sendMessage(apartmentInfoData.value.apartmentCode, messageText.value).then(() => {
-        alert("Message successfully sent")
+        console.log("Message successfully sent")
       }).catch(error => alert("Error sending message"))
     }
 
